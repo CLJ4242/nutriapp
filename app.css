@@ -131,6 +131,15 @@ button.de {
   border-radius: 6px;
   margin: 2px 0 8px;
 }
+.dehors {
+  grid-column: 1 / -1;
+  color: #1565c0;
+  background: #e3f2fd;
+  font-size: 0.82rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin: 2px 0 8px;
+}
 
 .tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .tbl th, .tbl td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--bord); }

@@ -202,5 +202,25 @@
   { "id": "moutarde", "nom": "Moutarde", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
   { "id": "vinaigre", "nom": "Vinaigre", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
   { "id": "sauce-soja", "nom": "Sauce soja", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
-  { "id": "cornichons", "nom": "Cornichons", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] }
+  { "id": "cornichons", "nom": "Cornichons", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+
+  { "id": "cumin", "nom": "Cumin", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "coriandre-moulue", "nom": "Coriandre moulue", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "curcuma", "nom": "Curcuma", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "paprika", "nom": "Paprika", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "piment", "nom": "Piment", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "cannelle", "nom": "Cannelle", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "curry", "nom": "Curry", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "garam-masala", "nom": "Garam masala", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "ras-el-hanout", "nom": "Ras el hanout", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "miso", "nom": "Miso", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "origan", "nom": "Origan", "categorie": "condiment", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "graines-sesame", "nom": "Graines de sésame", "categorie": "matiere-grasse", "rayon": "epicerie-salee", "tags": ["fibre"] },
+  { "id": "lait-coco", "nom": "Lait de coco", "categorie": "matiere-grasse", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "gingembre", "nom": "Gingembre", "categorie": "condiment", "rayon": "fruits-legumes", "tags": [] },
+  { "id": "basilic", "nom": "Basilic", "categorie": "condiment", "rayon": "fruits-legumes", "tags": [] },
+  { "id": "coriandre-fraiche", "nom": "Coriandre fraîche", "categorie": "condiment", "rayon": "fruits-legumes", "tags": [] },
+  { "id": "menthe", "nom": "Menthe", "categorie": "condiment", "rayon": "fruits-legumes", "tags": [] },
+  { "id": "persil", "nom": "Persil", "categorie": "condiment", "rayon": "fruits-legumes", "tags": [] },
+  { "id": "thym", "nom": "Thym", "categorie": "condiment", "rayon": "fruits-legumes", "tags": [] }
 ]

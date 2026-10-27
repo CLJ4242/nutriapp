@@ -8,7 +8,7 @@ import {
   getMasquerExemples, setMasquerExemples
 } from "./store.js";
 import { listeRegimes } from "./regimes/index.js";
-import { validerPlan, proposer, proposerRepas } from "./planner.js";
+import { validerPlan, proposer, proposerRepas, planVide } from "./planner.js";
 import { genererCourses } from "./courses.js";
 import { parserIngredients } from "./parse.js";
 import { MOIS, moisCourant, nomMois, statut, libelleSaison, analyseRecette } from "./saison.js";
@@ -40,6 +40,9 @@ const LIBELLE_RAYON_UI = {
   "cremerie": "Crèmerie", "epicerie-salee": "Épicerie salée", "epicerie-sucree": "Épicerie sucrée",
   "boulangerie": "Boulangerie", "boissons": "Boissons", "surgeles": "Surgelés", "autre": "Autre"
 };
+
+// Unités proposées pour les ingrédients d'une recette.
+const UNITES = ["g", "kg", "ml", "cl", "l", "pièce", "c. à soupe", "c. à café", "tranche", "gousse", "pincée"];
 
 // Petit helper de création d'éléments.
 function el(tag, props = {}, enfants = []) {
@@ -285,8 +288,15 @@ function formulaireRecette(c, recetteExistante) {
       const inQte = el("input", { type: "number", min: "0", step: "any", value: String(ligne.qte) });
       inQte.addEventListener("input", () => ligne.qte = parseFloat(inQte.value) || 0);
 
-      const inUnite = el("input", { type: "text", value: ligne.unite || "g" });
-      inUnite.addEventListener("input", () => ligne.unite = inUnite.value);
+      const inUnite = el("select");
+      const uniteCourante = ligne.unite || "g";
+      const options = UNITES.includes(uniteCourante) ? UNITES : [uniteCourante, ...UNITES];
+      for (const u of options) {
+        const o = el("option", { value: u, text: u });
+        if (u === uniteCourante) o.selected = true;
+        inUnite.appendChild(o);
+      }
+      inUnite.addEventListener("change", () => ligne.unite = inUnite.value);
 
       const btnX = el("button", {
         class: "danger", text: "×", title: "Retirer",
@@ -417,28 +427,53 @@ function miniFormAliment(zone, nomSuggere, onCree) {
 function rendrePlan(c) {
   vider(c);
   c.appendChild(el("h2", { text: "Plan de la semaine" }));
-  const plan = getPlan();
+  let plan = getPlan();
   if (!plan.mois) plan.mois = moisCourant();
+  if (!plan.variete) plan.variete = 2;
+
+  // Auto-remplissage : si le plan est vide, on le génère tout de suite.
+  if (planVide(plan)) {
+    plan = proposer({ mois: plan.mois, variete: plan.variete });
+    setPlan(plan);
+  }
+
   const recettes = getRecettes();
   const recById = recettesById();
   const alIdx = alimentsById();
 
-  // En-tête : mois de référence + génération.
+  // En-tête : mois + variété + regénération.
   const selMois = el("select");
   for (let m = 1; m <= 12; m++) {
     const o = el("option", { value: String(m), text: nomMois(m) });
     if (m === plan.mois) o.selected = true;
     selMois.appendChild(o);
   }
-  selMois.addEventListener("change", () => { plan.mois = parseInt(selMois.value, 10); setPlan(plan); rendrePlan(c); });
+  selMois.addEventListener("change", () => {
+    plan.mois = parseInt(selMois.value, 10);
+    plan = proposer({ mois: plan.mois, variete: plan.variete });
+    setPlan(plan); rendrePlan(c);
+  });
+
+  const selVar = el("select");
+  for (const [v, lib] of [[2, "Meal prep (2 plats / semaine)"], [3, "Plus varié (3 plats)"], [7, "Différent chaque jour"]]) {
+    const o = el("option", { value: String(v), text: lib });
+    if (v === plan.variete) o.selected = true;
+    selVar.appendChild(o);
+  }
+  selVar.addEventListener("change", () => {
+    plan.variete = parseInt(selVar.value, 10);
+    plan = proposer({ mois: plan.mois, variete: plan.variete });
+    setPlan(plan); rendrePlan(c);
+  });
 
   const entete = el("div", { class: "carte" });
   entete.appendChild(el("label", { class: "champ" }, ["Mois (pour la saison)", selMois]));
+  entete.appendChild(el("label", { class: "champ" }, ["Variété des repas", selVar]));
   entete.appendChild(el("button", {
-    class: "primaire", text: "🎲 Générer la semaine",
-    onclick: () => { const p = proposer({ mois: plan.mois }); setPlan(p); rendrePlan(c); }
+    class: "primaire", text: "🎲 Regénérer la semaine",
+    onclick: () => { plan = proposer({ mois: plan.mois, variete: plan.variete }); setPlan(plan); rendrePlan(c); }
   }));
-  entete.appendChild(el("p", { class: "muted", text: "Tire des recettes conformes au régime et de saison. Tu peux changer chaque repas, ou re-tirer un seul repas avec 🎲." }));
+  entete.appendChild(el("p", { class: "muted", text: "Le plan est rempli automatiquement (recettes de saison, conformes au régime). En mode meal prep, un même plat revient plusieurs jours — pratique pour cuisiner en avance. Change un repas dans le menu, ou re-tire-le avec 🎲." }));
   c.appendChild(entete);
 
   const zoneMsg = el("div", { class: "messages" });
@@ -450,19 +485,25 @@ function rendrePlan(c) {
       const case_ = plan.semaine[jour][t];
       const sel = el("select");
       sel.appendChild(el("option", { value: "", text: "— aucun —" }));
+      sel.appendChild(el("option", { value: "__dehors__", text: "🍽️ Au restaurant / dehors" }));
       for (const r of recettes.filter(r => r.typeRepas === t)) {
         const o = el("option", { value: r.id, text: r.nom });
-        if (r.id === case_.recetteId) o.selected = true;
+        if (!case_.dehors && r.id === case_.recetteId) o.selected = true;
         sel.appendChild(o);
       }
-      sel.addEventListener("change", () => { case_.recetteId = sel.value || null; setPlan(plan); rendrePlan(c); });
+      if (case_.dehors) sel.value = "__dehors__";
+      sel.addEventListener("change", () => {
+        if (sel.value === "__dehors__") { case_.recetteId = null; case_.dehors = true; }
+        else { case_.recetteId = sel.value || null; case_.dehors = false; }
+        setPlan(plan); rendrePlan(c);
+      });
 
       const btnDe = el("button", {
         class: "de", text: "🎲", title: "Re-tirer ce repas",
         onclick: () => {
           const exclure = case_.recetteId ? new Set([case_.recetteId]) : new Set();
           const id = proposerRepas(t, plan.mois, exclure);
-          if (id) { case_.recetteId = id; setPlan(plan); rendrePlan(c); }
+          if (id) { case_.recetteId = id; case_.dehors = false; setPlan(plan); rendrePlan(c); }
         }
       });
 
@@ -476,13 +517,17 @@ function rendrePlan(c) {
         btnDe
       ]));
 
-      // Indicateur de saison pour la recette choisie.
-      const recette = case_.recetteId ? recById[case_.recetteId] : null;
-      if (recette) {
-        const a = analyseRecette(recette, alIdx, plan.mois);
-        if (!a.ok) {
-          const quoi = [...a.horsSaison.map(n => n + " (hors saison)"), ...a.importes.map(n => n + " (importé)")];
-          bloc.appendChild(el("div", { class: "hors-saison", text: "⚠ " + quoi.join(", ") }));
+      if (case_.dehors) {
+        bloc.appendChild(el("div", { class: "dehors", text: "🍽️ Repas pris dehors — non planifié, hors courses." }));
+      } else {
+        // Indicateur de saison pour la recette choisie.
+        const recette = case_.recetteId ? recById[case_.recetteId] : null;
+        if (recette) {
+          const a = analyseRecette(recette, alIdx, plan.mois);
+          if (!a.ok) {
+            const quoi = [...a.horsSaison.map(n => n + " (hors saison)"), ...a.importes.map(n => n + " (importé)")];
+            bloc.appendChild(el("div", { class: "hors-saison", text: "⚠ " + quoi.join(", ") }));
+          }
         }
       }
     }

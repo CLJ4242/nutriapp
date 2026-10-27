@@ -376,5 +376,213 @@
       { "alimentId": "thon", "qteParPersonne": 100, "unite": "g" },
       { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
     ]
+  },
+
+  {
+    "id": "pdj-bol-poire-cannelle",
+    "nom": "Bol skyr, poire rôtie, chia & cannelle",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "skyr", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "flocons-avoine", "qteParPersonne": 20, "unite": "g" },
+      { "alimentId": "graines-chia", "qteParPersonne": 10, "unite": "g" },
+      { "alimentId": "poire", "qteParPersonne": 1, "unite": "pièce" },
+      { "alimentId": "cannelle", "qteParPersonne": 1, "unite": "c. à café" }
+    ]
+  },
+  {
+    "id": "pdj-tartines-feta-avocat",
+    "nom": "Tartines seigle, feta, avocat & menthe",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "pain-seigle", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "feta", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "avocat", "qteParPersonne": 50, "unite": "g" },
+      { "alimentId": "menthe", "qteParPersonne": 5, "unite": "g" },
+      { "alimentId": "huile-olive", "qteParPersonne": 5, "unite": "ml" }
+    ]
+  },
+
+  {
+    "id": "dej-poulet-citron-boulgour",
+    "nom": "Poulet mariné citron-origan, boulgour & courgettes grillées",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "poulet", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "boulgour", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "citron", "qteParPersonne": 0.25, "unite": "pièce" },
+      { "alimentId": "origan", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "huile-olive", "qteParPersonne": 10, "unite": "ml" }
+    ]
+  },
+  {
+    "id": "dej-boulettes-boeuf-semoule",
+    "nom": "Boulettes de bœuf au cumin, semoule & aubergines",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "boeuf-hache", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "semoule", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "aubergine", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "cumin", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "coriandre-fraiche", "qteParPersonne": 5, "unite": "g" },
+      { "alimentId": "huile-olive", "qteParPersonne": 10, "unite": "ml" }
+    ]
+  },
+  {
+    "id": "dej-poulet-tikka-riz",
+    "nom": "Poulet tikka au yaourt, riz basmati & épinards au curcuma",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "poulet", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "riz-basmati", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "yaourt-nature", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "garam-masala", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "curcuma", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "gingembre", "qteParPersonne": 5, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-saumon-teriyaki-riz",
+    "nom": "Saumon teriyaki, riz & brocoli au sésame",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "saumon", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "riz", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "sauce-soja", "qteParPersonne": 15, "unite": "ml" },
+      { "alimentId": "gingembre", "qteParPersonne": 5, "unite": "g" },
+      { "alimentId": "graines-sesame", "qteParPersonne": 5, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-bowl-mexicain-poulet",
+    "nom": "Bowl mexicain poulet épicé, quinoa, maïs & avocat",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "poulet", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "quinoa", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "mais", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "avocat", "qteParPersonne": 50, "unite": "g" },
+      { "alimentId": "cumin", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "paprika", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "coriandre-fraiche", "qteParPersonne": 5, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-dahl-lentilles-coco",
+    "nom": "Dahl de lentilles corail au lait de coco & épinards",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "lentilles", "qteParPersonne": 70, "unite": "g" },
+      { "alimentId": "lait-coco", "qteParPersonne": 60, "unite": "ml" },
+      { "alimentId": "epinards", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "oignon", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "curcuma", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "cumin", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "gingembre", "qteParPersonne": 5, "unite": "g" }
+    ]
+  },
+
+  {
+    "id": "din-dorade-fenouil",
+    "nom": "Dorade, fenouil braisé, tomates & olives au thym",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "dorade", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "fenouil", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "olives", "qteParPersonne": 20, "unite": "g" },
+      { "alimentId": "thym", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "huile-olive", "qteParPersonne": 10, "unite": "ml" }
+    ]
+  },
+  {
+    "id": "din-wok-crevettes-sesame",
+    "nom": "Wok de crevettes au gingembre, brocoli & sésame",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "crevettes", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "champignons", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "gingembre", "qteParPersonne": 5, "unite": "g" },
+      { "alimentId": "sauce-soja", "qteParPersonne": 15, "unite": "ml" },
+      { "alimentId": "graines-sesame", "qteParPersonne": 5, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-poulet-epices-legumes",
+    "nom": "Poulet aux épices, courgettes & aubergines rôties",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "poulet", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "aubergine", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "ras-el-hanout", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "paprika", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "menthe", "qteParPersonne": 5, "unite": "g" },
+      { "alimentId": "huile-olive", "qteParPersonne": 10, "unite": "ml" }
+    ]
+  },
+  {
+    "id": "din-curry-cabillaud-coco",
+    "nom": "Curry de cabillaud au lait de coco & épinards",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "cabillaud", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "lait-coco", "qteParPersonne": 60, "unite": "ml" },
+      { "alimentId": "epinards", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "curry", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "gingembre", "qteParPersonne": 5, "unite": "g" },
+      { "alimentId": "coriandre-fraiche", "qteParPersonne": 5, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-dinde-mexicaine",
+    "nom": "Poêlée de dinde épicée, poivrons, courgette & avocat",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "dinde", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "avocat", "qteParPersonne": 50, "unite": "g" },
+      { "alimentId": "cumin", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "paprika", "qteParPersonne": 1, "unite": "c. à café" },
+      { "alimentId": "coriandre-fraiche", "qteParPersonne": 5, "unite": "g" }
+    ]
+  },
+
+  {
+    "id": "col-skyr-miel-cannelle",
+    "nom": "Skyr, miel, cannelle & amandes",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "skyr", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "amandes", "qteParPersonne": 15, "unite": "g" },
+      { "alimentId": "miel", "qteParPersonne": 5, "unite": "g" },
+      { "alimentId": "cannelle", "qteParPersonne": 1, "unite": "c. à café" }
+    ]
+  },
+  {
+    "id": "col-yaourt-grec-pistaches",
+    "nom": "Yaourt grec, pistaches & cannelle",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "yaourt-grec", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "pistaches", "qteParPersonne": 20, "unite": "g" },
+      { "alimentId": "cannelle", "qteParPersonne": 1, "unite": "c. à café" }
+    ]
   }
 ]

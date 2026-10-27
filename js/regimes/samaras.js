@@ -127,9 +127,9 @@ function valideJour(repasDuJour, profil, ctx) {
   const violations = [];
   const avertissements = [];
 
-  // Collation de 16h45 obligatoire.
+  // Collation de 16h45 obligatoire (sauf si prise dehors).
   const collation = repasDuJour["collation"];
-  if (!collation || !collation.recette) {
+  if (!collation || (!collation.recette && !collation.dehors)) {
     violations.push("La collation de 16h45 est obligatoire.");
   }
 

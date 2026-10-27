@@ -4,12 +4,13 @@ import { recettesById } from "./store.js";
 import { getRegime } from "./regimes/index.js";
 import { analyseRecette, moisCourant, nomMois } from "./saison.js";
 
-// Résout une case du plan en { typeRepas, recette, exception }.
+// Résout une case du plan en { typeRepas, recette, exception, dehors }.
 function resoudreRepas(typeRepas, case_, recettesIdx) {
   return {
     typeRepas,
     recette: case_ && case_.recetteId ? recettesIdx[case_.recetteId] || null : null,
-    exception: !!(case_ && case_.exception)
+    exception: !!(case_ && case_.exception),
+    dehors: !!(case_ && case_.dehors)
   };
 }
 
@@ -107,6 +108,15 @@ function choixAleatoire(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function melanger(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // Recettes candidates pour un type de repas, conformes au régime de tous les
 // profils, partitionnées selon la saison. { enSaison:[...], horsSaison:[...] }.
 export function candidats(typeRepas, mois) {
@@ -123,8 +133,8 @@ export function candidats(typeRepas, mois) {
   return { enSaison, horsSaison };
 }
 
-// Tire une recette pour un créneau : de saison en priorité, en évitant si
-// possible les recettes déjà utilisées. Renvoie un recetteId ou null.
+// Tire une recette pour un créneau (re-tirage d'un seul repas) : de saison en
+// priorité, en évitant si possible les recettes exclues. Renvoie un id ou null.
 export function proposerRepas(typeRepas, mois, dejaUtilisees = new Set()) {
   const { enSaison, horsSaison } = candidats(typeRepas, mois);
   for (const pool of [enSaison, horsSaison]) {
@@ -136,22 +146,65 @@ export function proposerRepas(typeRepas, mois, dejaUtilisees = new Set()) {
   return null;
 }
 
-// Construit un plan hebdomadaire complet. { mois } par défaut = mois courant.
-export function proposer(options = {}) {
-  const mois = options.mois || moisCourant();
-  const plan = getPlan();
-  plan.mois = mois;
-  const utilisees = {};
-  for (const t of TYPES_REPAS) utilisees[t] = new Set();
-
-  for (const jour of JOURS) {
-    for (const t of TYPES_REPAS) {
-      const id = proposerRepas(t, mois, utilisees[t]);
-      if (id) utilisees[t].add(id);
-      plan.semaine[jour][t] = { recetteId: id, exception: false };
+// Choisit jusqu'à k recettes distinctes pour un type de repas (de saison en
+// priorité, complétées hors-saison si besoin pour atteindre la variété).
+function choisirPlats(typeRepas, mois, k) {
+  const { enSaison, horsSaison } = candidats(typeRepas, mois);
+  const choisis = melanger(enSaison).slice(0, k);
+  if (choisis.length < k) {
+    for (const r of melanger(horsSaison)) {
+      if (choisis.length >= k) break;
+      choisis.push(r);
     }
   }
+  return choisis.map(r => r.id);
+}
+
+// Répartit k plats sur n jours en blocs contigus (meal prep).
+function repartirBlocs(ids, n) {
+  if (!ids.length) return new Array(n).fill(null);
+  const out = [];
+  const base = Math.floor(n / ids.length);
+  let reste = n % ids.length;
+  for (const id of ids) {
+    let count = base + (reste > 0 ? 1 : 0);
+    if (reste > 0) reste--;
+    for (let i = 0; i < count; i++) out.push(id);
+  }
+  return out;
+}
+
+// Construit un plan hebdomadaire complet, orienté « meal prep » :
+// peu de plats distincts par type de repas, répétés en blocs sur la semaine.
+// options = { mois, variete } ; variete = nb de plats distincts par repas (défaut 2).
+export function proposer(options = {}) {
+  const mois = options.mois || moisCourant();
+  const variete = Math.max(1, options.variete || 2);
+  const plan = getPlan();
+  plan.mois = mois;
+  plan.variete = variete;
+
+  for (const t of TYPES_REPAS) {
+    const ids = choisirPlats(t, mois, variete);
+    const parJour = repartirBlocs(ids, JOURS.length);
+    JOURS.forEach((jour, i) => {
+      // On préserve les repas marqués « dehors » (restaurant / cheat).
+      if (plan.semaine[jour][t] && plan.semaine[jour][t].dehors) return;
+      plan.semaine[jour][t] = { recetteId: parJour[i], exception: false };
+    });
+  }
   return plan;
+}
+
+// Vrai si le plan ne contient aucune recette (pour l'auto-remplissage).
+export function planVide(plan) {
+  const p = plan || getPlan();
+  for (const jour of JOURS) {
+    for (const t of TYPES_REPAS) {
+      if (p.semaine[jour][t] && p.semaine[jour][t].recetteId) return false;
+    }
+  }
+  return true;
 }
 
 export { getRecettes };
