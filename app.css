@@ -108,13 +108,29 @@ button.danger {
 
 .ligne-repas {
   display: grid;
-  grid-template-columns: 90px 1fr auto;
-  gap: 8px;
+  grid-template-columns: 1fr auto;
+  gap: 6px 8px;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
-.etiq { font-size: 0.85rem; color: var(--gris); }
+.etiq { font-size: 0.9rem; grid-column: 1 / -1; }
+.etiq strong { color: var(--vert); }
+.horaire { color: var(--gris); font-size: 0.85rem; }
 .exc { font-size: 0.8rem; color: var(--gris); white-space: nowrap; }
+button.de {
+  padding: 8px 10px;
+  margin-top: 0;
+  background: #fff;
+}
+.hors-saison {
+  grid-column: 1 / -1;
+  color: var(--orange);
+  background: #fff3e0;
+  font-size: 0.82rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin: 2px 0 8px;
+}
 
 .tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .tbl th, .tbl td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--bord); }

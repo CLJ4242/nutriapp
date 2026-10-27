@@ -3,14 +3,23 @@ import {
   JOURS, TYPES_REPAS, LIBELLE_REPAS,
   getAliments, getRecettes, getFoyer, setFoyer,
   getPlan, setPlan, getCourses, setCourses,
-  alimentsById, uid,
+  alimentsById, recettesById, uid,
   ajouterRecette, modifierRecette, supprimerRecette, ajouterAliment,
   getMasquerExemples, setMasquerExemples
 } from "./store.js";
 import { listeRegimes } from "./regimes/index.js";
-import { validerPlan } from "./planner.js";
+import { validerPlan, proposer, proposerRepas } from "./planner.js";
 import { genererCourses } from "./courses.js";
 import { parserIngredients } from "./parse.js";
+import { MOIS, moisCourant, nomMois, statut, libelleSaison, analyseRecette } from "./saison.js";
+
+// Horaires des repas — cœur du régime (pas la pesée).
+const HORAIRES = {
+  "petit-dejeuner": "8h00",
+  "dejeuner": "12h00",
+  "collation": "16h45",
+  "diner": "19h00"
+};
 
 // Catégories et rayons proposés quand on crée un nouvel ingrédient.
 const CATEGORIES = [
@@ -122,18 +131,25 @@ function rendreFoyer(c) {
 function rendreAliments(c) {
   vider(c);
   c.appendChild(el("h2", { text: "Aliments" }));
+  const mois = moisCourant();
+  c.appendChild(el("p", { class: "muted", text: `Saison affichée pour ${nomMois(mois)}.` }));
   const aliments = getAliments().slice().sort((a, b) => a.nom.localeCompare(b.nom));
   const tbl = el("table", { class: "tbl" });
   tbl.appendChild(el("tr", {}, [
     el("th", { text: "Nom" }), el("th", { text: "Catégorie" }),
-    el("th", { text: "Rayon" }), el("th", { text: "Tags" })
+    el("th", { text: "Rayon" }), el("th", { text: "Saison" })
   ]));
   for (const al of aliments) {
+    const s = statut(al, mois);
+    const tdSaison = el("td", {}, [
+      libelleSaison(al),
+      s === "de-saison" ? el("span", { class: "badge", text: "de saison" }) : null
+    ]);
     tbl.appendChild(el("tr", {}, [
       el("td", { text: al.nom }),
       el("td", { text: al.categorie }),
       el("td", { text: al.rayon }),
-      el("td", { text: (al.tags || []).join(", ") })
+      tdSaison
     ]));
   }
   c.appendChild(tbl);
@@ -178,7 +194,7 @@ function rendreRecettes(c) {
       for (const ing of r.ingredients) {
         const al = alIdx[ing.alimentId];
         ul.appendChild(el("li", {
-          text: `${al ? al.nom : ing.alimentId} — ${arrondi(ing.qteParPersonne)} ${ing.unite} / pers.`
+          text: `${al ? al.nom : ing.alimentId} — ~${arrondi(ing.qteParPersonne)} ${ing.unite} / pers.`
         }));
       }
       bloc.appendChild(ul);
@@ -402,7 +418,28 @@ function rendrePlan(c) {
   vider(c);
   c.appendChild(el("h2", { text: "Plan de la semaine" }));
   const plan = getPlan();
+  if (!plan.mois) plan.mois = moisCourant();
   const recettes = getRecettes();
+  const recById = recettesById();
+  const alIdx = alimentsById();
+
+  // En-tête : mois de référence + génération.
+  const selMois = el("select");
+  for (let m = 1; m <= 12; m++) {
+    const o = el("option", { value: String(m), text: nomMois(m) });
+    if (m === plan.mois) o.selected = true;
+    selMois.appendChild(o);
+  }
+  selMois.addEventListener("change", () => { plan.mois = parseInt(selMois.value, 10); setPlan(plan); rendrePlan(c); });
+
+  const entete = el("div", { class: "carte" });
+  entete.appendChild(el("label", { class: "champ" }, ["Mois (pour la saison)", selMois]));
+  entete.appendChild(el("button", {
+    class: "primaire", text: "🎲 Générer la semaine",
+    onclick: () => { const p = proposer({ mois: plan.mois }); setPlan(p); rendrePlan(c); }
+  }));
+  entete.appendChild(el("p", { class: "muted", text: "Tire des recettes conformes au régime et de saison. Tu peux changer chaque repas, ou re-tirer un seul repas avec 🎲." }));
+  c.appendChild(entete);
 
   const zoneMsg = el("div", { class: "messages" });
 
@@ -418,31 +455,50 @@ function rendrePlan(c) {
         if (r.id === case_.recetteId) o.selected = true;
         sel.appendChild(o);
       }
-      sel.addEventListener("change", () => { case_.recetteId = sel.value || null; setPlan(plan); });
+      sel.addEventListener("change", () => { case_.recetteId = sel.value || null; setPlan(plan); rendrePlan(c); });
 
-      const cbExc = el("input", { type: "checkbox", title: "Exception autorisée" });
-      cbExc.checked = !!case_.exception;
-      cbExc.addEventListener("change", () => { case_.exception = cbExc.checked; setPlan(plan); });
+      const btnDe = el("button", {
+        class: "de", text: "🎲", title: "Re-tirer ce repas",
+        onclick: () => {
+          const exclure = case_.recetteId ? new Set([case_.recetteId]) : new Set();
+          const id = proposerRepas(t, plan.mois, exclure);
+          if (id) { case_.recetteId = id; setPlan(plan); rendrePlan(c); }
+        }
+      });
 
+      const horaire = t === "collation" ? `${HORAIRES[t]} (obligatoire)` : HORAIRES[t];
       bloc.appendChild(el("div", { class: "ligne-repas" }, [
-        el("span", { class: "etiq", text: LIBELLE_REPAS[t] }),
+        el("span", { class: "etiq" }, [
+          el("strong", { text: LIBELLE_REPAS[t] }),
+          el("span", { class: "horaire", text: " · " + horaire })
+        ]),
         sel,
-        el("label", { class: "exc", title: "Exception 1–2×/sem." }, [cbExc, " except."])
+        btnDe
       ]));
+
+      // Indicateur de saison pour la recette choisie.
+      const recette = case_.recetteId ? recById[case_.recetteId] : null;
+      if (recette) {
+        const a = analyseRecette(recette, alIdx, plan.mois);
+        if (!a.ok) {
+          const quoi = [...a.horsSaison.map(n => n + " (hors saison)"), ...a.importes.map(n => n + " (importé)")];
+          bloc.appendChild(el("div", { class: "hors-saison", text: "⚠ " + quoi.join(", ") }));
+        }
+      }
     }
     c.appendChild(bloc);
   }
 
   c.appendChild(el("button", {
     class: "primaire", text: "Vérifier le plan",
-    onclick: () => rendreMessages(zoneMsg)
+    onclick: () => rendreMessages(zoneMsg, plan.mois)
   }));
   c.appendChild(zoneMsg);
 }
 
-function rendreMessages(zone) {
+function rendreMessages(zone, mois) {
   vider(zone);
-  const res = validerPlan();
+  const res = validerPlan({ mois });
   const entete = el("p", {
     class: res.nbViolations ? "bilan ko" : "bilan ok",
     text: res.nbViolations
@@ -468,7 +524,7 @@ function rendreCourses(c) {
   vider(c);
   c.appendChild(el("h2", { text: "Liste de courses" }));
   const nb = Math.max(1, getFoyer().personnes.length);
-  c.appendChild(el("p", { class: "muted", text: `Quantités pour ${nb} convive(s), semaine entière.` }));
+  c.appendChild(el("p", { class: "muted", text: `Quantités indicatives pour ${nb} convive(s) sur la semaine — pas besoin de peser.` }));
 
   const groupes = genererCourses();
   const courses = getCourses();
@@ -490,7 +546,7 @@ function rendreCourses(c) {
         label.classList.toggle("coche", cb.checked);
       });
       const label = el("label", { class: "case" + (cb.checked ? " coche" : "") }, [
-        cb, ` ${ligne.nom} — ${arrondi(ligne.qte)} ${ligne.unite}`
+        cb, ` ${ligne.nom} — ~${arrondi(ligne.qte)} ${ligne.unite}`
       ]);
       bloc.appendChild(label);
     }
