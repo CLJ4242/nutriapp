@@ -8,7 +8,7 @@ import {
   getMasquerExemples, setMasquerExemples
 } from "./store.js";
 import { listeRegimes } from "./regimes/index.js";
-import { validerPlan, proposer, proposerRepas, planVide, normaliserVariete } from "./planner.js";
+import { validerPlan, proposer, proposerRepas, planVide, normaliserVariete, assainir, recetteConforme } from "./planner.js";
 import { genererCourses } from "./courses.js";
 import { parserIngredients } from "./parse.js";
 import { MOIS, moisCourant, nomMois, statut, libelleSaison, analyseRecette } from "./saison.js";
@@ -435,6 +435,9 @@ function rendrePlan(c) {
   if (planVide(plan)) {
     plan = proposer({ mois: plan.mois, variete: plan.variete });
     setPlan(plan);
+  } else if (assainir(plan, plan.mois)) {
+    // Remplace les repas devenus non conformes (ex. aliment exclu ajouté après).
+    setPlan(plan);
   }
 
   const recettes = getRecettes();
@@ -478,7 +481,7 @@ function rendrePlan(c) {
     champsVar
   ]));
   entete.appendChild(el("button", {
-    class: "primaire", text: "🎲 Regénérer la semaine",
+    class: "accent", text: "🎲 Regénérer la semaine",
     onclick: () => { plan = proposer({ mois: plan.mois, variete: plan.variete }); setPlan(plan); rendrePlan(c); }
   }));
   entete.appendChild(el("p", { class: "muted", text: "Rempli automatiquement : recettes de saison, conformes au régime, dîners simples. En meal prep, un même plat revient plusieurs jours (midi surtout). Change un repas dans le menu, ou re-tire-le avec 🎲." }));
@@ -494,7 +497,9 @@ function rendrePlan(c) {
       const sel = el("select");
       sel.appendChild(el("option", { value: "", text: "— aucun —" }));
       sel.appendChild(el("option", { value: "__dehors__", text: "🍽️ Au restaurant / dehors" }));
-      for (const r of recettes.filter(r => r.typeRepas === t)) {
+      // On ne liste que les recettes conformes (régime + aliments exclus),
+      // en gardant la recette déjà choisie même si elle ne l'est pas.
+      for (const r of recettes.filter(r => r.typeRepas === t && (recetteConforme(r) || r.id === case_.recetteId))) {
         const o = el("option", { value: r.id, text: r.nom });
         if (!case_.dehors && r.id === case_.recetteId) o.selected = true;
         sel.appendChild(o);

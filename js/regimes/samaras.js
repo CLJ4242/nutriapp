@@ -39,12 +39,8 @@ function valideRepas(repas, profil, ctx) {
   const { typeRepas, recette, exception } = repas;
   const aliments = alimentsDuRepas(recette, ctx);
 
-  // Exclusions personnelles du profil (aliments exclus).
-  for (const al of aliments) {
-    if (profil.exclus && profil.exclus.includes(al.id)) {
-      violations.push(`« ${al.nom} » est exclu du profil de ${profil.nom}.`);
-    }
-  }
+  // Note : les exclusions personnelles sont gérées globalement dans planner.js
+  // (indépendamment du régime), pas ici.
 
   // Règle : interdits après 17h (dîner).
   if (estApres17h(typeRepas)) {

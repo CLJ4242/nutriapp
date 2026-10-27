@@ -63,12 +63,7 @@ r = stef.valideJour(
 );
 verifie("Collation manquante = violation", r.violations.some(v => /obligatoire/.test(v)));
 
-// 8) Aliment exclu du profil -> violation
-r = stef.valideRepas(
-  { typeRepas: "diner", recette: recById["din-cabillaud-legumes"], exception: false },
-  { nom: "X", regimeId: "stef", exclus: ["cabillaud"] }, { alimentsById, repasDuJour: {} }
-);
-verifie("Aliment exclu = violation", r.violations.some(v => /exclu/.test(v)));
+// (Les exclusions personnelles sont désormais gérées dans planner.js, pas ici.)
 
 console.log(echecs === 0 ? "\nTous les tests passent." : `\n${echecs} test(s) en échec.`);
 process.exit(echecs === 0 ? 0 : 1);

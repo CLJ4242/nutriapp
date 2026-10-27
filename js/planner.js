@@ -14,15 +14,29 @@ function resoudreRepas(typeRepas, case_, recettesIdx) {
   };
 }
 
-// Une recette est-elle conforme au régime pour TOUS les profils du foyer ?
+// Une recette contient-elle un aliment exclu par ce profil ? (indépendant du régime)
+export function alimentsExclus(recette, personne) {
+  if (!recette || !personne || !personne.exclus || !personne.exclus.length) return [];
+  return recette.ingredients
+    .map(i => i.alimentId)
+    .filter(id => personne.exclus.includes(id));
+}
+
+// Une recette est-elle conforme (exclusions + régime) pour TOUS les profils ?
 function conformeTousProfils(recette, foyer, ctxBase) {
   const repas = { typeRepas: recette.typeRepas, recette, exception: false };
   const ctx = { ...ctxBase, repasDuJour: {} };
   for (const personne of foyer.personnes) {
+    if (alimentsExclus(recette, personne).length > 0) return false;
     const regime = getRegime(personne.regimeId);
     if (regime.valideRepas(repas, personne, ctx).violations.length > 0) return false;
   }
   return true;
+}
+
+// Conformité d'une recette vis-à-vis du foyer courant (pour filtrer l'UI).
+export function recetteConforme(recette) {
+  return conformeTousProfils(recette, getFoyer(), { alimentsById: alimentsById() });
 }
 
 // Valide tout le plan pour tous les profils du foyer.
@@ -67,6 +81,14 @@ export function validerPlan(options = {}) {
       for (const t of TYPES_REPAS) {
         const repas = repasDuJour[t];
         if (!repas.recette) continue;
+        // Exclusions personnelles (indépendantes du régime).
+        for (const id of alimentsExclus(repas.recette, personne)) {
+          const al = ctxBase.alimentsById[id];
+          messages.push({
+            niveau: "violation",
+            texte: `[${personne.nom}] ${repas.recette.nom} — ${al ? al.nom : id} est exclu`
+          });
+        }
         const res = regime.valideRepas(repas, personne, ctx);
         for (const v of res.violations) {
           messages.push({
@@ -203,6 +225,36 @@ export function proposer(options = {}) {
     });
   }
   return plan;
+}
+
+// Remplace les repas devenus non conformes (ex. aliment exclu ajouté après coup),
+// sans toucher aux repas valides ni aux repas « dehors ». Renvoie true si modifié.
+export function assainir(plan, mois) {
+  const m = mois || plan.mois || moisCourant();
+  const foyer = getFoyer();
+  const ctxBase = { alimentsById: alimentsById() };
+  const recById = recettesById();
+  const utilisees = {};
+  for (const t of TYPES_REPAS) utilisees[t] = new Set();
+  for (const jour of JOURS) for (const t of TYPES_REPAS) {
+    const id = plan.semaine[jour][t].recetteId;
+    if (id) utilisees[t].add(id);
+  }
+  let change = false;
+  for (const jour of JOURS) {
+    for (const t of TYPES_REPAS) {
+      const case_ = plan.semaine[jour][t];
+      if (case_.dehors || !case_.recetteId) continue;
+      const r = recById[case_.recetteId];
+      if (!r || !conformeTousProfils(r, foyer, ctxBase)) {
+        const nouvel = proposerRepas(t, m, utilisees[t]);
+        case_.recetteId = nouvel;
+        if (nouvel) utilisees[t].add(nouvel);
+        change = true;
+      }
+    }
+  }
+  return change;
 }
 
 // Vrai si le plan ne contient aucune recette (pour l'auto-remplissage).
