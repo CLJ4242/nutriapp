@@ -144,7 +144,8 @@ export function candidats(typeRepas, mois) {
   const enSaison = [];
   const horsSaison = [];
   for (const r of getRecettes()) {
-    if (r.typeRepas !== typeRepas) continue;
+    const types = r.typesRepas || [r.typeRepas];
+    if (!types.includes(typeRepas)) continue;
     if (!conformeTousProfils(r, foyer, ctxBase)) continue;
     (analyseRecette(r, alIdx, mois).ok ? enSaison : horsSaison).push(r);
   }
@@ -205,14 +206,20 @@ export function normaliserVariete(v) {
   return { ...VARIETE_DEFAUT, ...(v && typeof v === "object" ? v : {}) };
 }
 
-// Construit un plan hebdomadaire complet, orienté « meal prep » :
-// options = { mois, variete }. variete = objet {typeRepas: nb de plats distincts}.
+// Construit un plan hebdomadaire complet.
+// options = { mois, variete, mealPrep }.
+// - mealPrep (défaut true) : peu de plats distincts, répétés en blocs.
+// - mealPrep false : un plat différent chaque jour (variété maximale).
 export function proposer(options = {}) {
   const mois = options.mois || moisCourant();
-  const variete = normaliserVariete(options.variete);
+  const mealPrep = options.mealPrep !== false;
+  const variete = mealPrep
+    ? normaliserVariete(options.variete)
+    : { "petit-dejeuner": 7, "dejeuner": 7, "collation": 7, "diner": 7 };
   const plan = getPlan();
   plan.mois = mois;
-  plan.variete = variete;
+  plan.mealPrep = mealPrep;
+  if (mealPrep) plan.variete = variete;
 
   for (const t of TYPES_REPAS) {
     const k = Math.max(1, variete[t] || 2);

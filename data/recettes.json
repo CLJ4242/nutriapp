@@ -626,15 +626,16 @@
     ]
   },
   {
-    "id": "pdj-soupe-verte",
-    "nom": "Soupe de légumes verts",
-    "typeRepas": "petit-dejeuner",
+    "id": "din-soupe-verte-oeuf",
+    "nom": "Soupe de légumes verts & œuf poché",
+    "typeRepas": "diner",
+    "effort": "simple",
     "ingredients": [
       { "alimentId": "courgette", "qteParPersonne": 150, "unite": "g" },
       { "alimentId": "brocoli", "qteParPersonne": 100, "unite": "g" },
       { "alimentId": "epinards", "qteParPersonne": 80, "unite": "g" },
       { "alimentId": "oignon", "qteParPersonne": 40, "unite": "g" },
-      { "alimentId": "fromage-blanc", "qteParPersonne": 40, "unite": "g" }
+      { "alimentId": "oeufs", "qteParPersonne": 2, "unite": "pièce" }
     ]
   },
   {

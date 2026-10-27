@@ -5,7 +5,7 @@ import {
   getPlan, setPlan, getCourses, setCourses,
   alimentsById, recettesById, uid,
   ajouterRecette, modifierRecette, supprimerRecette, ajouterAliment,
-  getMasquerExemples, setMasquerExemples
+  getMasquerExemples, setMasquerExemples, setTypesRepas
 } from "./store.js";
 import { listeRegimes } from "./regimes/index.js";
 import { validerPlan, proposer, proposerRepas, planVide, normaliserVariete, assainir, recetteConforme } from "./planner.js";
@@ -182,17 +182,40 @@ function rendreRecettes(c) {
     return;
   }
 
+  // Modifie les types de repas d'une recette (user -> recette ; exemple -> surcharge).
+  const changerTypes = (r, types) => {
+    if (!types.length) { rendreRecettes(c); return; } // au moins un type
+    if (r.source === "user") modifierRecette({ ...r, typesRepas: types, typeRepas: types[0], source: undefined });
+    else setTypesRepas(r.id, types);
+    rendreRecettes(c);
+  };
+
+  // Chaque recette est listée une fois, sous son type principal.
   for (const t of TYPES_REPAS) {
-    const recs = recettes.filter(r => r.typeRepas === t);
+    const recs = recettes.filter(r => (r.typesRepas || [r.typeRepas])[0] === t);
     if (!recs.length) continue;
     c.appendChild(el("h3", { text: LIBELLE_REPAS[t] }));
     for (const r of recs) {
+      const types = r.typesRepas || [r.typeRepas];
       const bloc = el("div", { class: "carte" });
-      const titre = el("div", { class: "ligne" }, [
+      bloc.appendChild(el("div", { class: "ligne" }, [
         el("strong", { text: r.nom }),
         r.source === "seed" ? el("span", { class: "badge", text: "exemple" }) : null
-      ]);
-      bloc.appendChild(titre);
+      ]));
+
+      // Cases à cocher des repas où le plat est autorisé.
+      const cases = el("div", { class: "types" });
+      for (const tr of TYPES_REPAS) {
+        const cb = el("input", { type: "checkbox" });
+        cb.checked = types.includes(tr);
+        cb.addEventListener("change", () => {
+          const nouveaux = TYPES_REPAS.filter(x => x === tr ? cb.checked : types.includes(x));
+          changerTypes(r, nouveaux);
+        });
+        cases.appendChild(el("label", { class: "case" }, [cb, " " + LIBELLE_REPAS[tr]]));
+      }
+      bloc.appendChild(cases);
+
       const ul = el("ul");
       for (const ing of r.ingredients) {
         const al = alIdx[ing.alimentId];
@@ -224,7 +247,7 @@ function formulaireRecette(c, recetteExistante) {
   const nbFoyer = Math.max(1, getFoyer().personnes.length);
   const etat = {
     nom: recetteExistante ? recetteExistante.nom : "",
-    typeRepas: recetteExistante ? recetteExistante.typeRepas : "dejeuner",
+    typesRepas: recetteExistante ? (recetteExistante.typesRepas || [recetteExistante.typeRepas]).slice() : ["dejeuner"],
     nbPersonnes: nbFoyer || 2,
     // lignes = { alimentId, nom, qte (TOTALE), unite }
     lignes: []
@@ -244,19 +267,22 @@ function formulaireRecette(c, recetteExistante) {
   const inNom = el("input", { type: "text", value: etat.nom, placeholder: "Nom de la recette" });
   inNom.addEventListener("input", () => etat.nom = inNom.value);
 
-  const selType = el("select");
+  // Types de repas (plusieurs possibles : un plat peut être matin ET midi, etc.).
+  const casesType = el("div", { class: "types" });
   for (const t of TYPES_REPAS) {
-    const o = el("option", { value: t, text: LIBELLE_REPAS[t] });
-    if (t === etat.typeRepas) o.selected = true;
-    selType.appendChild(o);
+    const cb = el("input", { type: "checkbox" });
+    cb.checked = etat.typesRepas.includes(t);
+    cb.addEventListener("change", () => {
+      etat.typesRepas = TYPES_REPAS.filter(x => x === t ? cb.checked : etat.typesRepas.includes(x));
+    });
+    casesType.appendChild(el("label", { class: "case" }, [cb, " " + LIBELLE_REPAS[t]]));
   }
-  selType.addEventListener("change", () => etat.typeRepas = selType.value);
 
   const inNb = el("input", { type: "number", min: "1", value: String(etat.nbPersonnes) });
   inNb.addEventListener("input", () => etat.nbPersonnes = Math.max(1, parseInt(inNb.value, 10) || 1));
 
   form.appendChild(el("label", { class: "champ" }, ["Nom", inNom]));
-  form.appendChild(el("label", { class: "champ" }, ["Type de repas", selType]));
+  form.appendChild(el("div", { class: "champ" }, ["Repas (un ou plusieurs)", casesType]));
   form.appendChild(el("label", { class: "champ" }, ["Quantités pour combien de personnes ?", inNb]));
 
   // Zone des lignes d'ingrédients.
@@ -356,6 +382,7 @@ function formulaireRecette(c, recetteExistante) {
     if (!lignesValides.length) erreurs.push("Ajoute au moins un ingrédient avec une quantité.");
     const nonClasses = lignesValides.filter(l => !l.alimentId).map(l => l.nom || "(sans nom)");
     if (nonClasses.length) erreurs.push("Ingrédients à choisir/classer : " + nonClasses.join(", ") + ".");
+    if (!etat.typesRepas.length) erreurs.push("Coche au moins un repas (matin, midi, collation ou soir).");
     if (erreurs.length) {
       zoneErr.style.display = "";
       zoneErr.textContent = erreurs.join(" ");
@@ -365,7 +392,8 @@ function formulaireRecette(c, recetteExistante) {
     const recette = {
       id: recetteExistante ? recetteExistante.id : undefined,
       nom: etat.nom.trim(),
-      typeRepas: etat.typeRepas,
+      typesRepas: etat.typesRepas.slice(),
+      typeRepas: etat.typesRepas[0],
       ingredients: lignesValides.map(l => ({
         alimentId: l.alimentId,
         qteParPersonne: Math.round((l.qte / n) * 100) / 100,
@@ -429,11 +457,13 @@ function rendrePlan(c) {
   c.appendChild(el("h2", { text: "Plan de la semaine" }));
   let plan = getPlan();
   if (!plan.mois) plan.mois = moisCourant();
+  if (plan.mealPrep === undefined) plan.mealPrep = true;
   plan.variete = normaliserVariete(plan.variete);
+  const regen = () => proposer({ mois: plan.mois, variete: plan.variete, mealPrep: plan.mealPrep });
 
   // Auto-remplissage : si le plan est vide, on le génère tout de suite.
   if (planVide(plan)) {
-    plan = proposer({ mois: plan.mois, variete: plan.variete });
+    plan = regen();
     setPlan(plan);
   } else if (assainir(plan, plan.mois)) {
     // Remplace les repas devenus non conformes (ex. aliment exclu ajouté après).
@@ -453,11 +483,20 @@ function rendrePlan(c) {
   }
   selMois.addEventListener("change", () => {
     plan.mois = parseInt(selMois.value, 10);
-    plan = proposer({ mois: plan.mois, variete: plan.variete });
+    plan = regen();
     setPlan(plan); rendrePlan(c);
   });
 
-  // Un sélecteur de variété par type de repas (nb de plats distincts / semaine).
+  // Interrupteur meal prep.
+  const cbMP = el("input", { type: "checkbox" });
+  cbMP.checked = plan.mealPrep;
+  cbMP.addEventListener("change", () => {
+    plan.mealPrep = cbMP.checked;
+    plan = regen();
+    setPlan(plan); rendrePlan(c);
+  });
+
+  // Un sélecteur de variété par type de repas (uniquement en meal prep).
   const champsVar = el("div", { class: "variete" });
   for (const t of TYPES_REPAS) {
     const sv = el("select");
@@ -468,7 +507,7 @@ function rendrePlan(c) {
     }
     sv.addEventListener("change", () => {
       plan.variete[t] = parseInt(sv.value, 10);
-      plan = proposer({ mois: plan.mois, variete: plan.variete });
+      plan = regen();
       setPlan(plan); rendrePlan(c);
     });
     champsVar.appendChild(el("label", { class: "champ" }, [LIBELLE_REPAS[t], sv]));
@@ -476,15 +515,21 @@ function rendrePlan(c) {
 
   const entete = el("div", { class: "carte" });
   entete.appendChild(el("label", { class: "champ" }, ["Mois (pour la saison)", selMois]));
-  entete.appendChild(el("details", {}, [
-    el("summary", { text: "Variété des repas (meal prep)" }),
-    champsVar
-  ]));
+  entete.appendChild(el("label", { class: "case" }, [cbMP, " Mode meal prep (répéter des plats)"]));
+  if (plan.mealPrep) {
+    entete.appendChild(el("details", {}, [
+      el("summary", { text: "Variété des repas" }),
+      champsVar
+    ]));
+  }
   entete.appendChild(el("button", {
     class: "accent", text: "🎲 Regénérer la semaine",
-    onclick: () => { plan = proposer({ mois: plan.mois, variete: plan.variete }); setPlan(plan); rendrePlan(c); }
+    onclick: () => { plan = regen(); setPlan(plan); rendrePlan(c); }
   }));
-  entete.appendChild(el("p", { class: "muted", text: "Rempli automatiquement : recettes de saison, conformes au régime, dîners simples. En meal prep, un même plat revient plusieurs jours (midi surtout). Change un repas dans le menu, ou re-tire-le avec 🎲." }));
+  const hint = plan.mealPrep
+    ? "Meal prep : un même plat revient plusieurs jours (midi surtout), pratique à cuisiner en avance."
+    : "Mode normal : un plat différent chaque jour.";
+  entete.appendChild(el("p", { class: "muted", text: "Rempli automatiquement (de saison, conforme au régime, dîners simples). " + hint + " Change un repas dans le menu, ou re-tire-le avec 🎲." }));
   c.appendChild(entete);
 
   const zoneMsg = el("div", { class: "messages" });
@@ -499,7 +544,7 @@ function rendrePlan(c) {
       sel.appendChild(el("option", { value: "__dehors__", text: "🍽️ Au restaurant / dehors" }));
       // On ne liste que les recettes conformes (régime + aliments exclus),
       // en gardant la recette déjà choisie même si elle ne l'est pas.
-      for (const r of recettes.filter(r => r.typeRepas === t && (recetteConforme(r) || r.id === case_.recetteId))) {
+      for (const r of recettes.filter(r => (r.typesRepas || [r.typeRepas]).includes(t) && (recetteConforme(r) || r.id === case_.recetteId))) {
         const o = el("option", { value: r.id, text: r.nom });
         if (!case_.dehors && r.id === case_.recetteId) o.selected = true;
         sel.appendChild(o);

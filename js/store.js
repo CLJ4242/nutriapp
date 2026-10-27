@@ -6,6 +6,7 @@ const K = {
   recettes: PREFIX + "recettes",            // seed
   alimentsUser: PREFIX + "aliments.user",   // ajoutés par l'utilisatrice (jamais écrasés)
   recettesUser: PREFIX + "recettes.user",   // idem
+  typeOverride: PREFIX + "typeRepas",       // type de repas forcé par recette {id: type}
   masquerExemples: PREFIX + "masquerExemples",
   foyer: PREFIX + "foyer",
   plan: PREFIX + "plan",
@@ -15,7 +16,7 @@ const K = {
 
 // À incrémenter dès qu'on modifie data/aliments.json ou data/recettes.json :
 // la base de référence est alors rechargée (le foyer et le plan sont conservés).
-const SEED_VERSION = 5;
+const SEED_VERSION = 6;
 
 export const JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
 export const TYPES_REPAS = ["petit-dejeuner", "dejeuner", "collation", "diner"];
@@ -56,6 +57,7 @@ function planVide() {
   return {
     semaine,
     mois: new Date().getMonth() + 1,
+    mealPrep: true,
     variete: { "petit-dejeuner": 2, "dejeuner": 2, "collation": 2, "diner": 5 }
   };
 }
@@ -99,6 +101,9 @@ export async function init() {
   if (!localStorage.getItem(K.recettesUser)) {
     ecrire(K.recettesUser, []);
   }
+  if (!localStorage.getItem(K.typeOverride)) {
+    ecrire(K.typeOverride, {});
+  }
 }
 
 // Getters fusionnés : seed + ajouts utilisateur (tagués source:"user").
@@ -108,11 +113,27 @@ export function getAliments() {
   return [...seed, ...user];
 }
 
+// Types de repas autorisés pour une recette (liste), avec surcharge persistante.
+function typesDe(r, override) {
+  if (Array.isArray(override[r.id]) && override[r.id].length) return override[r.id].slice();
+  if (Array.isArray(r.typesRepas) && r.typesRepas.length) return r.typesRepas.slice();
+  return [r.typeRepas];
+}
+
 export function getRecettes() {
-  const user = lire(K.recettesUser, []).map(r => ({ ...r, source: "user" }));
+  const override = lire(K.typeOverride, {});
+  const prep = (r, source) => ({ ...r, source, typesRepas: typesDe(r, override) });
+  const user = lire(K.recettesUser, []).map(r => prep(r, "user"));
   if (lire(K.masquerExemples, false)) return user;
-  const seed = lire(K.recettes, []).map(r => ({ ...r, source: "seed" }));
+  const seed = lire(K.recettes, []).map(r => prep(r, "seed"));
   return [...seed, ...user];
+}
+
+// Force les types de repas d'une recette (surcharge, pour les exemples notamment).
+export function setTypesRepas(recetteId, types) {
+  const override = lire(K.typeOverride, {});
+  override[recetteId] = types;
+  ecrire(K.typeOverride, override);
 }
 
 export const getFoyer = () => lire(K.foyer, { personnes: [] });
