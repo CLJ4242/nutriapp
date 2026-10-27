@@ -1,0 +1,95 @@
+[
+  {
+    "id": "pdj-bol",
+    "nom": "Bol skyr, son d'avoine & fruits",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "skyr", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "son-avoine", "qteParPersonne": 30, "unite": "g" },
+      { "alimentId": "graines-chia", "qteParPersonne": 10, "unite": "g" },
+      { "alimentId": "fruits-rouges", "qteParPersonne": 80, "unite": "g" }
+    ]
+  },
+  {
+    "id": "pdj-tartines",
+    "nom": "Tartines seigle, fromage & avocat",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "pain-seigle", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "fromage", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "avocat", "qteParPersonne": 50, "unite": "g" },
+      { "alimentId": "oeufs", "qteParPersonne": 2, "unite": "pièce" }
+    ]
+  },
+  {
+    "id": "dej-poulet-legumes",
+    "nom": "Poulet, riz & légumes verts",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "poulet", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "riz", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "huile-olive", "qteParPersonne": 10, "unite": "ml" }
+    ]
+  },
+  {
+    "id": "dej-saumon-quinoa",
+    "nom": "Saumon, quinoa & épinards",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "saumon", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "quinoa", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "col-skyr-amandes",
+    "nom": "Skyr & amandes",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "skyr", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "amandes", "qteParPersonne": 20, "unite": "g" }
+    ]
+  },
+  {
+    "id": "col-fromageblanc-chia",
+    "nom": "Fromage blanc & graines de chia",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "fromage-blanc", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "graines-chia", "qteParPersonne": 10, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-cabillaud-legumes",
+    "nom": "Cabillaud & poêlée de légumes",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "cabillaud", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "haricots-verts", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "champignons", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-omelette-salade",
+    "nom": "Omelette & salade",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
+      { "alimentId": "salade", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-pates-interdit",
+    "nom": "Pâtes au thon (test règle du soir)",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "pates", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "thon", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
+    ]
+  }
+]

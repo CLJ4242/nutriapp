@@ -1,0 +1,5 @@
+# Documents personnels à ne jamais publier (ordonnance, etc.)
+*.pdf
+
+# Système
+.DS_Store

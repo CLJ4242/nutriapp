@@ -1,0 +1,58 @@
+[
+  { "id": "skyr", "nom": "Skyr", "categorie": "laitier", "rayon": "cremerie", "tags": [] },
+  { "id": "fromage-blanc", "nom": "Fromage blanc", "categorie": "laitier", "rayon": "cremerie", "tags": [] },
+  { "id": "fromage", "nom": "Fromage", "categorie": "laitier", "rayon": "cremerie", "tags": [] },
+  { "id": "oeufs", "nom": "Œufs", "categorie": "proteine", "rayon": "cremerie", "tags": [] },
+
+  { "id": "son-avoine", "nom": "Son d'avoine", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h", "fibre"] },
+  { "id": "graines-lin", "nom": "Graines de lin", "categorie": "matiere-grasse", "rayon": "epicerie-salee", "tags": ["fibre"] },
+  { "id": "graines-chia", "nom": "Graines de chia", "categorie": "matiere-grasse", "rayon": "epicerie-salee", "tags": ["fibre"] },
+
+  { "id": "pain-seigle", "nom": "Pain de seigle", "categorie": "feculent", "rayon": "boulangerie", "tags": ["interdit-apres-17h", "pain"] },
+  { "id": "pain-proteine", "nom": "Pain protéiné", "categorie": "feculent", "rayon": "boulangerie", "tags": ["interdit-apres-17h", "pain"] },
+  { "id": "pates", "nom": "Pâtes", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h"] },
+  { "id": "riz", "nom": "Riz", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h"] },
+  { "id": "quinoa", "nom": "Quinoa", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h"] },
+  { "id": "mais", "nom": "Maïs", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h"] },
+  { "id": "lentilles", "nom": "Lentilles", "categorie": "proteine", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h", "legumineuse"] },
+  { "id": "haricots-secs", "nom": "Haricots secs", "categorie": "proteine", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h", "legumineuse"] },
+  { "id": "pommes-terre", "nom": "Pommes de terre", "categorie": "feculent", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+  { "id": "patates-douces", "nom": "Patates douces", "categorie": "feculent", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+
+  { "id": "carottes", "nom": "Carottes", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+  { "id": "courge", "nom": "Courge", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+  { "id": "betterave", "nom": "Betterave", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+
+  { "id": "courgette", "nom": "Courgette", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "brocoli", "nom": "Brocoli", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "haricots-verts", "nom": "Haricots verts", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "epinards", "nom": "Épinards", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "salade", "nom": "Salade verte", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "tomates", "nom": "Tomates", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "concombre", "nom": "Concombre", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "poivron", "nom": "Poivron", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "champignons", "nom": "Champignons", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+  { "id": "chou-fleur", "nom": "Chou-fleur", "categorie": "legume", "rayon": "fruits-legumes", "tags": ["fibre"] },
+
+  { "id": "poulet", "nom": "Blanc de poulet", "categorie": "proteine", "rayon": "boucherie-poissonnerie", "tags": [] },
+  { "id": "dinde", "nom": "Escalope de dinde", "categorie": "proteine", "rayon": "boucherie-poissonnerie", "tags": [] },
+  { "id": "boeuf-hache", "nom": "Bœuf haché 5%", "categorie": "proteine", "rayon": "boucherie-poissonnerie", "tags": [] },
+  { "id": "saumon", "nom": "Saumon", "categorie": "proteine", "rayon": "boucherie-poissonnerie", "tags": [] },
+  { "id": "cabillaud", "nom": "Cabillaud", "categorie": "proteine", "rayon": "boucherie-poissonnerie", "tags": [] },
+  { "id": "thon", "nom": "Thon", "categorie": "proteine", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "jambon", "nom": "Jambon blanc", "categorie": "proteine", "rayon": "cremerie", "tags": [] },
+  { "id": "tofu", "nom": "Tofu", "categorie": "proteine", "rayon": "epicerie-salee", "tags": [] },
+
+  { "id": "avocat", "nom": "Avocat", "categorie": "matiere-grasse", "rayon": "fruits-legumes", "tags": [] },
+  { "id": "huile-olive", "nom": "Huile d'olive", "categorie": "matiere-grasse", "rayon": "epicerie-salee", "tags": [] },
+  { "id": "amandes", "nom": "Amandes", "categorie": "matiere-grasse", "rayon": "epicerie-salee", "tags": ["fibre"] },
+
+  { "id": "pomme", "nom": "Pomme", "categorie": "fruit", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+  { "id": "fruits-rouges", "nom": "Fruits rouges", "categorie": "fruit", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+  { "id": "banane", "nom": "Banane", "categorie": "fruit", "rayon": "fruits-legumes", "tags": ["interdit-apres-17h"] },
+
+  { "id": "chocolat-noir", "nom": "Chocolat noir", "categorie": "sucre", "rayon": "epicerie-sucree", "tags": ["interdit-apres-17h", "dessert"] },
+  { "id": "miel", "nom": "Miel", "categorie": "sucre", "rayon": "epicerie-sucree", "tags": ["interdit-apres-17h"] },
+
+  { "id": "vin", "nom": "Vin", "categorie": "boisson", "rayon": "boissons", "tags": ["alcool"] }
+]
