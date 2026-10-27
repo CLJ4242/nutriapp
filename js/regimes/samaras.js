@@ -1,4 +1,4 @@
-// Régime « Stef » — règles codées explicitement.
+// Régime « Samaras » — règles codées explicitement.
 // Chaque fonction renvoie { violations: [], avertissements: [] }.
 // Les violations sont bloquantes, les avertissements sont indicatifs.
 
@@ -137,8 +137,8 @@ function valideJour(repasDuJour, profil, ctx) {
 }
 
 export default {
-  id: "stef",
-  nom: "Régime Stef",
+  id: "samaras",
+  nom: "Régime Samaras",
   heures: HEURES,
   valideRepas,
   valideJour

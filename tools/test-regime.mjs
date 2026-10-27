@@ -1,6 +1,6 @@
 // Test rapide du moteur de règles (hors navigateur). Usage : node tools/test-regime.mjs
 import { readFileSync } from "node:fs";
-import stef from "../js/regimes/stef.js";
+import stef from "../js/regimes/samaras.js";
 
 const aliments = JSON.parse(readFileSync(new URL("../data/aliments.json", import.meta.url)));
 const recettes = JSON.parse(readFileSync(new URL("../data/recettes.json", import.meta.url)));

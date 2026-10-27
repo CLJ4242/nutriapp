@@ -2,12 +2,20 @@
 
 const PREFIX = "nutriapp.";
 const K = {
-  aliments: PREFIX + "aliments",
-  recettes: PREFIX + "recettes",
+  aliments: PREFIX + "aliments",            // seed (réécrit sur bump de SEED_VERSION)
+  recettes: PREFIX + "recettes",            // seed
+  alimentsUser: PREFIX + "aliments.user",   // ajoutés par l'utilisatrice (jamais écrasés)
+  recettesUser: PREFIX + "recettes.user",   // idem
+  masquerExemples: PREFIX + "masquerExemples",
   foyer: PREFIX + "foyer",
   plan: PREFIX + "plan",
-  courses: PREFIX + "courses"
+  courses: PREFIX + "courses",
+  seedVersion: PREFIX + "seedVersion"
 };
+
+// À incrémenter dès qu'on modifie data/aliments.json ou data/recettes.json :
+// la base de référence est alors rechargée (le foyer et le plan sont conservés).
+const SEED_VERSION = 2;
 
 export const JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
 export const TYPES_REPAS = ["petit-dejeuner", "dejeuner", "collation", "diner"];
@@ -32,6 +40,11 @@ function ecrire(cle, valeur) {
   localStorage.setItem(cle, JSON.stringify(valeur));
 }
 
+// Identifiant court unique (réutilisé par l'UI).
+export function uid(prefixe = "x") {
+  return prefixe + Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3);
+}
+
 function planVide() {
   const semaine = {};
   for (const jour of JOURS) {
@@ -43,18 +56,32 @@ function planVide() {
   return { semaine };
 }
 
-// Charge les bases seed depuis data/ au premier lancement.
+// Charge les bases seed depuis data/ au premier lancement, et les rafraîchit
+// quand SEED_VERSION change (sans toucher au foyer, au plan ni aux courses).
 export async function init() {
-  if (!localStorage.getItem(K.aliments)) {
+  const versionStockee = Number(localStorage.getItem(K.seedVersion) || 0);
+  const seedObsolete = versionStockee < SEED_VERSION;
+
+  if (seedObsolete || !localStorage.getItem(K.aliments)) {
     const aliments = await fetch("data/aliments.json").then(r => r.json());
     ecrire(K.aliments, aliments);
   }
-  if (!localStorage.getItem(K.recettes)) {
+  if (seedObsolete || !localStorage.getItem(K.recettes)) {
     const recettes = await fetch("data/recettes.json").then(r => r.json());
     ecrire(K.recettes, recettes);
   }
+  ecrire(K.seedVersion, SEED_VERSION);
+
   if (!localStorage.getItem(K.foyer)) {
     ecrire(K.foyer, { personnes: [] });
+  } else {
+    // Migration : l'ancien identifiant de régime « stef » devient « samaras ».
+    const foyer = lire(K.foyer, { personnes: [] });
+    let change = false;
+    for (const p of foyer.personnes) {
+      if (p.regimeId === "stef") { p.regimeId = "samaras"; change = true; }
+    }
+    if (change) ecrire(K.foyer, foyer);
   }
   if (!localStorage.getItem(K.plan)) {
     ecrire(K.plan, planVide());
@@ -62,10 +89,28 @@ export async function init() {
   if (!localStorage.getItem(K.courses)) {
     ecrire(K.courses, { coches: {} });
   }
+  if (!localStorage.getItem(K.alimentsUser)) {
+    ecrire(K.alimentsUser, []);
+  }
+  if (!localStorage.getItem(K.recettesUser)) {
+    ecrire(K.recettesUser, []);
+  }
 }
 
-export const getAliments = () => lire(K.aliments, []);
-export const getRecettes = () => lire(K.recettes, []);
+// Getters fusionnés : seed + ajouts utilisateur (tagués source:"user").
+export function getAliments() {
+  const seed = lire(K.aliments, []).map(a => ({ ...a, source: "seed" }));
+  const user = lire(K.alimentsUser, []).map(a => ({ ...a, source: "user" }));
+  return [...seed, ...user];
+}
+
+export function getRecettes() {
+  const user = lire(K.recettesUser, []).map(r => ({ ...r, source: "user" }));
+  if (lire(K.masquerExemples, false)) return user;
+  const seed = lire(K.recettes, []).map(r => ({ ...r, source: "seed" }));
+  return [...seed, ...user];
+}
+
 export const getFoyer = () => lire(K.foyer, { personnes: [] });
 export const getPlan = () => lire(K.plan, planVide());
 export const getCourses = () => lire(K.courses, { coches: {} });
@@ -73,6 +118,44 @@ export const getCourses = () => lire(K.courses, { coches: {} });
 export const setFoyer = f => ecrire(K.foyer, f);
 export const setPlan = p => ecrire(K.plan, p);
 export const setCourses = c => ecrire(K.courses, c);
+
+// Préférence d'affichage des recettes d'exemple.
+export const getMasquerExemples = () => lire(K.masquerExemples, false);
+export const setMasquerExemples = v => ecrire(K.masquerExemples, !!v);
+
+// --- CRUD utilisateur (n'écrit QUE dans les tableaux user) ---
+
+// Ajoute un aliment perso ; renvoie son id. Évite les doublons d'id.
+export function ajouterAliment(aliment) {
+  const user = lire(K.alimentsUser, []);
+  const id = aliment.id || uid("al");
+  const nouvel = { id, nom: aliment.nom, categorie: aliment.categorie, rayon: aliment.rayon, tags: aliment.tags || [] };
+  user.push(nouvel);
+  ecrire(K.alimentsUser, user);
+  return id;
+}
+
+export function ajouterRecette(recette) {
+  const user = lire(K.recettesUser, []);
+  const id = recette.id || uid("rec");
+  user.push({ ...recette, id, source: undefined });
+  ecrire(K.recettesUser, user);
+  return id;
+}
+
+export function modifierRecette(recette) {
+  const user = lire(K.recettesUser, []);
+  const i = user.findIndex(r => r.id === recette.id);
+  if (i === -1) return false;
+  user[i] = { ...recette, source: undefined };
+  ecrire(K.recettesUser, user);
+  return true;
+}
+
+export function supprimerRecette(id) {
+  const user = lire(K.recettesUser, []);
+  ecrire(K.recettesUser, user.filter(r => r.id !== id));
+}
 
 // Index pratiques.
 export function alimentsById() {

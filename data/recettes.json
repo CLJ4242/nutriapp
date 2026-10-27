@@ -1,13 +1,46 @@
 [
   {
     "id": "pdj-bol",
-    "nom": "Bol skyr, son d'avoine & fruits",
+    "nom": "Bol skyr, son d'avoine & fruits rouges",
     "typeRepas": "petit-dejeuner",
     "ingredients": [
       { "alimentId": "skyr", "qteParPersonne": 150, "unite": "g" },
       { "alimentId": "son-avoine", "qteParPersonne": 30, "unite": "g" },
       { "alimentId": "graines-chia", "qteParPersonne": 10, "unite": "g" },
       { "alimentId": "fruits-rouges", "qteParPersonne": 80, "unite": "g" }
+    ]
+  },
+  {
+    "id": "pdj-bol-flocons",
+    "nom": "Bol fromage blanc, flocons & pomme",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "fromage-blanc", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "flocons-avoine", "qteParPersonne": 30, "unite": "g" },
+      { "alimentId": "graines-lin", "qteParPersonne": 10, "unite": "g" },
+      { "alimentId": "pomme", "qteParPersonne": 1, "unite": "pièce" }
+    ]
+  },
+  {
+    "id": "pdj-bol-myrtilles",
+    "nom": "Bol skyr, flocons & myrtilles",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "skyr", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "flocons-avoine", "qteParPersonne": 30, "unite": "g" },
+      { "alimentId": "amandes", "qteParPersonne": 15, "unite": "g" },
+      { "alimentId": "myrtille", "qteParPersonne": 80, "unite": "g" }
+    ]
+  },
+  {
+    "id": "pdj-yaourt-grec",
+    "nom": "Yaourt grec, muesli & banane",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "yaourt-grec", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "muesli", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "noix", "qteParPersonne": 15, "unite": "g" },
+      { "alimentId": "banane", "qteParPersonne": 1, "unite": "pièce" }
     ]
   },
   {
@@ -21,6 +54,29 @@
       { "alimentId": "oeufs", "qteParPersonne": 2, "unite": "pièce" }
     ]
   },
+  {
+    "id": "pdj-tartines-chevre",
+    "nom": "Tartines complètes, chèvre & tomates",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "pain-complet", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "chevre", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "oeufs", "qteParPersonne": 2, "unite": "pièce" }
+    ]
+  },
+  {
+    "id": "pdj-tartines-saumon",
+    "nom": "Tartines seigle, fromage blanc & saumon fumé",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "pain-seigle", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "fromage-blanc", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "saumon-fume", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "avocat", "qteParPersonne": 50, "unite": "g" }
+    ]
+  },
+
   {
     "id": "dej-poulet-legumes",
     "nom": "Poulet, riz & légumes verts",
@@ -45,6 +101,104 @@
     ]
   },
   {
+    "id": "dej-boeuf-patates",
+    "nom": "Steak, pommes de terre & haricots verts",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "boeuf-steak", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "pommes-terre", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "haricots-verts", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "salade", "qteParPersonne": 50, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-dinde-boulgour",
+    "nom": "Dinde, boulgour & poêlée de légumes",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "dinde", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "boulgour", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-cabillaud-riz",
+    "nom": "Cabillaud, riz complet & brocoli",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "cabillaud", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "riz-complet", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "carottes", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-poulet-patate-douce",
+    "nom": "Poulet rôti, patate douce & épinards",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "poulet-cuisse", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "patates-douces", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 150, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-tofu-quinoa",
+    "nom": "Tofu grillé, quinoa & légumes",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "tofu", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "quinoa", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-porc-polenta",
+    "nom": "Filet de porc, polenta & chou",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "porc-filet", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "polenta", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "chou", "qteParPersonne": 150, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-saumon-pates",
+    "nom": "Saumon, pâtes complètes & épinards",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "saumon", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "pates-completes", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-crevettes-riz",
+    "nom": "Crevettes sautées, riz basmati & légumes",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "crevettes", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "riz-basmati", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "dej-oeufs-lentilles",
+    "nom": "Œufs, lentilles & crudités",
+    "typeRepas": "dejeuner",
+    "ingredients": [
+      { "alimentId": "oeufs", "qteParPersonne": 2, "unite": "pièce" },
+      { "alimentId": "lentilles", "qteParPersonne": 60, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "concombre", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+
+  {
     "id": "col-skyr-amandes",
     "nom": "Skyr & amandes",
     "typeRepas": "collation",
@@ -62,6 +216,43 @@
       { "alimentId": "graines-chia", "qteParPersonne": 10, "unite": "g" }
     ]
   },
+  {
+    "id": "col-yaourt-noix",
+    "nom": "Yaourt grec & noix",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "yaourt-grec", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "noix", "qteParPersonne": 20, "unite": "g" }
+    ]
+  },
+  {
+    "id": "col-cottage-amandes",
+    "nom": "Cottage cheese & amandes",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "cottage-cheese", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "amandes", "qteParPersonne": 20, "unite": "g" }
+    ]
+  },
+  {
+    "id": "col-petitsuisse-lin",
+    "nom": "Petit-suisse & graines de lin",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "petit-suisse", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "graines-lin", "qteParPersonne": 10, "unite": "g" }
+    ]
+  },
+  {
+    "id": "col-skyr-noisettes",
+    "nom": "Skyr & noisettes",
+    "typeRepas": "collation",
+    "ingredients": [
+      { "alimentId": "skyr", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "noisettes", "qteParPersonne": 20, "unite": "g" }
+    ]
+  },
+
   {
     "id": "din-cabillaud-legumes",
     "nom": "Cabillaud & poêlée de légumes",
@@ -83,8 +274,102 @@
     ]
   },
   {
+    "id": "din-poulet-courgettes",
+    "nom": "Poulet & courgettes rôties",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "poulet", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-saumon-epinards",
+    "nom": "Saumon & épinards",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "saumon", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "champignons", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-dinde-ratatouille",
+    "nom": "Dinde & ratatouille",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "dinde", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "aubergine", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "courgette", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-crevettes-wok",
+    "nom": "Wok de crevettes & légumes",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "crevettes", "qteParPersonne": 130, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "poivron", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "champignons", "qteParPersonne": 80, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-tofu-legumes",
+    "nom": "Tofu & légumes vapeur",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "tofu", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "chou-fleur", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "haricots-verts", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-truite-fenouil",
+    "nom": "Truite & fenouil braisé",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "truite", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "fenouil", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-dorade-legumes",
+    "nom": "Dorade & asperges",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "dorade", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "asperge", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-oeufs-champignons",
+    "nom": "Œufs brouillés & champignons",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
+      { "alimentId": "champignons", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
+    "id": "din-poulet-salade",
+    "nom": "Salade de poulet & crudités",
+    "typeRepas": "diner",
+    "ingredients": [
+      { "alimentId": "poulet", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "salade", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "concombre", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "tomates", "qteParPersonne": 100, "unite": "g" }
+    ]
+  },
+  {
     "id": "din-pates-interdit",
-    "nom": "Pâtes au thon (test règle du soir)",
+    "nom": "Pâtes au thon (exemple interdit le soir)",
     "typeRepas": "diner",
     "ingredients": [
       { "alimentId": "pates", "qteParPersonne": 80, "unite": "g" },

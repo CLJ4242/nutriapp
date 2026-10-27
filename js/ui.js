@@ -3,11 +3,34 @@ import {
   JOURS, TYPES_REPAS, LIBELLE_REPAS,
   getAliments, getRecettes, getFoyer, setFoyer,
   getPlan, setPlan, getCourses, setCourses,
-  alimentsById
+  alimentsById, uid,
+  ajouterRecette, modifierRecette, supprimerRecette, ajouterAliment,
+  getMasquerExemples, setMasquerExemples
 } from "./store.js";
 import { listeRegimes } from "./regimes/index.js";
 import { validerPlan } from "./planner.js";
 import { genererCourses } from "./courses.js";
+import { parserIngredients } from "./parse.js";
+
+// Catégories et rayons proposés quand on crée un nouvel ingrédient.
+const CATEGORIES = [
+  "legume", "fruit", "proteine", "feculent", "laitier",
+  "matiere-grasse", "sucre", "boisson", "condiment"
+];
+const LIBELLE_CATEGORIE = {
+  "legume": "Légume", "fruit": "Fruit", "proteine": "Protéine",
+  "feculent": "Féculent", "laitier": "Laitier", "matiere-grasse": "Matière grasse",
+  "sucre": "Sucre / dessert", "boisson": "Boisson", "condiment": "Condiment"
+};
+const RAYONS = [
+  "fruits-legumes", "boucherie-poissonnerie", "cremerie", "epicerie-salee",
+  "epicerie-sucree", "boulangerie", "boissons", "surgeles", "autre"
+];
+const LIBELLE_RAYON_UI = {
+  "fruits-legumes": "Fruits & légumes", "boucherie-poissonnerie": "Boucherie / Poissonnerie",
+  "cremerie": "Crèmerie", "epicerie-salee": "Épicerie salée", "epicerie-sucree": "Épicerie sucrée",
+  "boulangerie": "Boulangerie", "boissons": "Boissons", "surgeles": "Surgelés", "autre": "Autre"
+};
 
 // Petit helper de création d'éléments.
 function el(tag, props = {}, enfants = []) {
@@ -26,10 +49,6 @@ function el(tag, props = {}, enfants = []) {
 }
 
 function vider(c) { c.innerHTML = ""; }
-
-function uid() {
-  return "p" + Math.random().toString(36).slice(2, 8);
-}
 
 // ---------- Vue Foyer ----------
 function rendreFoyer(c) {
@@ -91,8 +110,8 @@ function rendreFoyer(c) {
   c.appendChild(el("button", {
     class: "primaire", text: "+ Ajouter une personne",
     onclick: () => {
-      const def = regimes.find(r => r.id === "stef") || regimes[0];
-      foyer.personnes.push({ id: uid(), nom: "", regimeId: def.id, aimes: [], exclus: [] });
+      const def = regimes.find(r => r.id === "samaras") || regimes[0];
+      foyer.personnes.push({ id: uid("p"), nom: "", regimeId: def.id, aimes: [], exclus: [] });
       setFoyer(foyer);
       rendreFoyer(c);
     }
@@ -124,25 +143,258 @@ function rendreAliments(c) {
 function rendreRecettes(c) {
   vider(c);
   c.appendChild(el("h2", { text: "Recettes" }));
+
+  const barre = el("div", { class: "ligne" });
+  barre.appendChild(el("button", {
+    class: "primaire", text: "+ Ajouter une recette",
+    onclick: () => formulaireRecette(c, null)
+  }));
+  const masque = getMasquerExemples();
+  barre.appendChild(el("button", {
+    class: "danger", text: masque ? "Afficher les exemples" : "Masquer les exemples",
+    onclick: () => { setMasquerExemples(!masque); rendreRecettes(c); }
+  }));
+  c.appendChild(barre);
+
   const alIdx = alimentsById();
+  const recettes = getRecettes();
+  if (!recettes.length) {
+    c.appendChild(el("p", { class: "muted", text: "Aucune recette. Clique sur « + Ajouter une recette »." }));
+    return;
+  }
+
   for (const t of TYPES_REPAS) {
-    const recs = getRecettes().filter(r => r.typeRepas === t);
+    const recs = recettes.filter(r => r.typeRepas === t);
     if (!recs.length) continue;
     c.appendChild(el("h3", { text: LIBELLE_REPAS[t] }));
     for (const r of recs) {
       const bloc = el("div", { class: "carte" });
-      bloc.appendChild(el("strong", { text: r.nom }));
+      const titre = el("div", { class: "ligne" }, [
+        el("strong", { text: r.nom }),
+        r.source === "seed" ? el("span", { class: "badge", text: "exemple" }) : null
+      ]);
+      bloc.appendChild(titre);
       const ul = el("ul");
       for (const ing of r.ingredients) {
         const al = alIdx[ing.alimentId];
         ul.appendChild(el("li", {
-          text: `${al ? al.nom : ing.alimentId} — ${ing.qteParPersonne} ${ing.unite} / pers.`
+          text: `${al ? al.nom : ing.alimentId} — ${arrondi(ing.qteParPersonne)} ${ing.unite} / pers.`
         }));
       }
       bloc.appendChild(ul);
+      if (r.source === "user") {
+        bloc.appendChild(el("div", { class: "ligne" }, [
+          el("button", { text: "Modifier", onclick: () => formulaireRecette(c, r) }),
+          el("button", {
+            class: "danger", text: "Supprimer",
+            onclick: () => { if (confirm(`Supprimer « ${r.nom} » ?`)) { supprimerRecette(r.id); rendreRecettes(c); } }
+          })
+        ]));
+      }
       c.appendChild(bloc);
     }
   }
+}
+
+// Formulaire d'ajout / modification d'une recette.
+function formulaireRecette(c, recetteExistante) {
+  vider(c);
+  const edition = !!recetteExistante;
+  c.appendChild(el("h2", { text: edition ? "Modifier la recette" : "Nouvelle recette" }));
+
+  const nbFoyer = Math.max(1, getFoyer().personnes.length);
+  const etat = {
+    nom: recetteExistante ? recetteExistante.nom : "",
+    typeRepas: recetteExistante ? recetteExistante.typeRepas : "dejeuner",
+    nbPersonnes: nbFoyer || 2,
+    // lignes = { alimentId, nom, qte (TOTALE), unite }
+    lignes: []
+  };
+  if (recetteExistante) {
+    const alIdx = alimentsById();
+    etat.lignes = recetteExistante.ingredients.map(ing => ({
+      alimentId: ing.alimentId,
+      nom: alIdx[ing.alimentId] ? alIdx[ing.alimentId].nom : ing.alimentId,
+      qte: Math.round(ing.qteParPersonne * etat.nbPersonnes * 100) / 100,
+      unite: ing.unite
+    }));
+  }
+
+  const form = el("div", { class: "carte" });
+
+  const inNom = el("input", { type: "text", value: etat.nom, placeholder: "Nom de la recette" });
+  inNom.addEventListener("input", () => etat.nom = inNom.value);
+
+  const selType = el("select");
+  for (const t of TYPES_REPAS) {
+    const o = el("option", { value: t, text: LIBELLE_REPAS[t] });
+    if (t === etat.typeRepas) o.selected = true;
+    selType.appendChild(o);
+  }
+  selType.addEventListener("change", () => etat.typeRepas = selType.value);
+
+  const inNb = el("input", { type: "number", min: "1", value: String(etat.nbPersonnes) });
+  inNb.addEventListener("input", () => etat.nbPersonnes = Math.max(1, parseInt(inNb.value, 10) || 1));
+
+  form.appendChild(el("label", { class: "champ" }, ["Nom", inNom]));
+  form.appendChild(el("label", { class: "champ" }, ["Type de repas", selType]));
+  form.appendChild(el("label", { class: "champ" }, ["Quantités pour combien de personnes ?", inNb]));
+
+  // Zone des lignes d'ingrédients.
+  form.appendChild(el("h3", { text: "Ingrédients (quantités totales)" }));
+  const zoneLignes = el("div");
+  form.appendChild(zoneLignes);
+
+  function dessinerLignes() {
+    vider(zoneLignes);
+    const aliments = getAliments().slice().sort((a, b) => a.nom.localeCompare(b.nom));
+    etat.lignes.forEach((ligne, i) => {
+      const sel = el("select");
+      sel.appendChild(el("option", { value: "", text: ligne.nom ? `— ${ligne.nom} (à choisir) —` : "— choisir —" }));
+      for (const al of aliments) {
+        const o = el("option", { value: al.id, text: al.nom });
+        if (al.id === ligne.alimentId) o.selected = true;
+        sel.appendChild(o);
+      }
+      sel.appendChild(el("option", { value: "__nouveau__", text: "➕ Nouvel ingrédient…" }));
+      sel.addEventListener("change", () => {
+        if (sel.value === "__nouveau__") {
+          miniFormAliment(zoneLignes, ligne.nom, (id) => { ligne.alimentId = id; dessinerLignes(); });
+          sel.value = ligne.alimentId || "";
+        } else {
+          ligne.alimentId = sel.value || null;
+        }
+      });
+
+      const inQte = el("input", { type: "number", min: "0", step: "any", value: String(ligne.qte) });
+      inQte.addEventListener("input", () => ligne.qte = parseFloat(inQte.value) || 0);
+
+      const inUnite = el("input", { type: "text", value: ligne.unite || "g" });
+      inUnite.addEventListener("input", () => ligne.unite = inUnite.value);
+
+      const btnX = el("button", {
+        class: "danger", text: "×", title: "Retirer",
+        onclick: () => { etat.lignes.splice(i, 1); dessinerLignes(); }
+      });
+
+      zoneLignes.appendChild(el("div", { class: "ligne-ing" }, [sel, inQte, inUnite, btnX]));
+    });
+  }
+  dessinerLignes();
+
+  form.appendChild(el("button", {
+    text: "+ Ingrédient",
+    onclick: () => { etat.lignes.push({ alimentId: null, nom: "", qte: 0, unite: "g" }); dessinerLignes(); }
+  }));
+
+  // Collage de texte.
+  const details = el("details");
+  details.appendChild(el("summary", { text: "Coller une liste d'ingrédients" }));
+  const zoneTexte = el("textarea", { rows: "6", placeholder: "Ex. :\n200 g de carottes\n2 œufs\n150 g de riz" });
+  details.appendChild(zoneTexte);
+  details.appendChild(el("button", {
+    text: "Analyser le texte",
+    onclick: () => {
+      const parsed = parserIngredients(zoneTexte.value, getAliments());
+      if (!parsed.length) { alert("Rien à analyser."); return; }
+      const alIdx = alimentsById();
+      for (const p of parsed) {
+        etat.lignes.push({
+          alimentId: p.alimentId || null,
+          nom: p.alimentId && alIdx[p.alimentId] ? alIdx[p.alimentId].nom : p.nom,
+          qte: p.qte, unite: p.unite
+        });
+      }
+      zoneTexte.value = "";
+      details.open = false;
+      dessinerLignes();
+    }
+  }));
+  form.appendChild(details);
+
+  // Boutons d'action.
+  const zoneErr = el("p", { class: "bilan ko", style: "display:none" });
+  form.appendChild(zoneErr);
+  form.appendChild(el("div", { class: "ligne" }, [
+    el("button", {
+      class: "primaire", text: edition ? "Enregistrer" : "Créer la recette",
+      onclick: () => enregistrer()
+    }),
+    el("button", { text: "Annuler", onclick: () => rendreRecettes(c) })
+  ]));
+
+  function enregistrer() {
+    const erreurs = [];
+    if (!etat.nom.trim()) erreurs.push("Donne un nom à la recette.");
+    const lignesValides = etat.lignes.filter(l => l.qte > 0);
+    if (!lignesValides.length) erreurs.push("Ajoute au moins un ingrédient avec une quantité.");
+    const nonClasses = lignesValides.filter(l => !l.alimentId).map(l => l.nom || "(sans nom)");
+    if (nonClasses.length) erreurs.push("Ingrédients à choisir/classer : " + nonClasses.join(", ") + ".");
+    if (erreurs.length) {
+      zoneErr.style.display = "";
+      zoneErr.textContent = erreurs.join(" ");
+      return;
+    }
+    const n = etat.nbPersonnes;
+    const recette = {
+      id: recetteExistante ? recetteExistante.id : undefined,
+      nom: etat.nom.trim(),
+      typeRepas: etat.typeRepas,
+      ingredients: lignesValides.map(l => ({
+        alimentId: l.alimentId,
+        qteParPersonne: Math.round((l.qte / n) * 100) / 100,
+        unite: l.unite || "g"
+      }))
+    };
+    if (edition) modifierRecette(recette); else ajouterRecette(recette);
+    rendreRecettes(c);
+  }
+
+  c.appendChild(form);
+}
+
+// Mini-formulaire pour classer un nouvel ingrédient, inséré en place.
+function miniFormAliment(zone, nomSuggere, onCree) {
+  const panneau = el("div", { class: "carte mini" });
+  panneau.appendChild(el("strong", { text: "Nouvel ingrédient" }));
+
+  const inNom = el("input", { type: "text", value: nomSuggere || "", placeholder: "Nom" });
+
+  const selCat = el("select");
+  for (const cat of CATEGORIES) selCat.appendChild(el("option", { value: cat, text: LIBELLE_CATEGORIE[cat] }));
+
+  const selRayon = el("select");
+  for (const r of RAYONS) selRayon.appendChild(el("option", { value: r, text: LIBELLE_RAYON_UI[r] }));
+
+  const cbInterdit = el("input", { type: "checkbox" });
+  const cbFibre = el("input", { type: "checkbox" });
+
+  panneau.appendChild(el("label", { class: "champ" }, ["Nom", inNom]));
+  panneau.appendChild(el("label", { class: "champ" }, ["Catégorie", selCat]));
+  panneau.appendChild(el("label", { class: "champ" }, ["Rayon", selRayon]));
+  panneau.appendChild(el("label", { class: "case" }, [cbInterdit, " Interdit après 17h"]));
+  panneau.appendChild(el("label", { class: "case" }, [cbFibre, " Source de fibre"]));
+
+  panneau.appendChild(el("div", { class: "ligne" }, [
+    el("button", {
+      class: "primaire", text: "Ajouter",
+      onclick: () => {
+        if (!inNom.value.trim()) { inNom.focus(); return; }
+        const tags = [];
+        if (cbInterdit.checked) tags.push("interdit-apres-17h");
+        if (cbFibre.checked) tags.push("fibre");
+        const id = ajouterAliment({
+          nom: inNom.value.trim(), categorie: selCat.value, rayon: selRayon.value, tags
+        });
+        panneau.remove();
+        onCree(id);
+      }
+    }),
+    el("button", { text: "Annuler", onclick: () => panneau.remove() })
+  ]));
+
+  zone.appendChild(panneau);
+  inNom.focus();
 }
 
 // ---------- Vue Plan ----------

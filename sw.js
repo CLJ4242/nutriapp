@@ -1,5 +1,5 @@
 // Service worker : cache de l'app shell + données, stratégie cache-first.
-const CACHE = "nutriapp-v1";
+const CACHE = "nutriapp-v3";
 const ASSETS = [
   ".",
   "index.html",
@@ -8,10 +8,11 @@ const ASSETS = [
   "js/app.js",
   "js/ui.js",
   "js/store.js",
+  "js/parse.js",
   "js/planner.js",
   "js/courses.js",
   "js/regimes/index.js",
-  "js/regimes/stef.js",
+  "js/regimes/samaras.js",
   "data/aliments.json",
   "data/recettes.json",
   "icons/icon-192.png",

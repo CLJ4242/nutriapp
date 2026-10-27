@@ -1,15 +1,15 @@
 // Registre des régimes. Pour ajouter un régime, l'importer et l'enregistrer ici.
-import stef from "./stef.js";
+import samaras from "./samaras.js";
 
 const REGIMES = {
-  [stef.id]: stef
+  [samaras.id]: samaras
 };
 
 // Régime « neutre » par défaut : aucune contrainte.
 const AUCUN = {
   id: "aucun",
   nom: "Aucun régime",
-  heures: stef.heures,
+  heures: samaras.heures,
   valideRepas() {
     return { violations: [], avertissements: [] };
   },

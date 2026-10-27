@@ -130,3 +130,54 @@ button.danger {
 .msgs li.avertissement { background: #fff3e0; color: var(--orange); }
 
 ul { margin: 6px 0; padding-left: 20px; }
+
+/* Éditeur de recettes */
+.badge {
+  background: var(--vert-clair);
+  color: var(--vert);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  align-self: center;
+}
+.ligne { align-items: center; flex-wrap: wrap; }
+.champ {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 0.85rem;
+  color: var(--gris);
+}
+.champ input, .champ select { margin-top: 4px; }
+
+.ligne-ing {
+  display: grid;
+  grid-template-columns: 1fr 70px 60px 36px;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.ligne-ing input, .ligne-ing select { padding: 8px; }
+.ligne-ing .danger { padding: 6px; margin-top: 0; }
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--bord);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  margin: 8px 0;
+}
+
+.carte.mini { background: var(--vert-clair); border-color: var(--vert); margin-top: 8px; }
+
+button {
+  background: #fff;
+  border: 1px solid var(--bord);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 8px;
+}
+
+details summary { cursor: pointer; padding: 8px 0; color: var(--vert); font-weight: 600; }
