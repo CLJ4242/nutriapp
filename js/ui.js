@@ -8,7 +8,7 @@ import {
   getMasquerExemples, setMasquerExemples, setTypesRepas
 } from "./store.js";
 import { listeRegimes } from "./regimes/index.js";
-import { validerPlan, proposer, proposerRepas, planVide, normaliserVariete, assainir, recetteConforme } from "./planner.js";
+import { validerPlan, proposer, proposerRepas, planVide, normaliserVariete, assainir, recetteConforme, NB_CRENEAUX } from "./planner.js";
 import { genererCourses } from "./courses.js";
 import { parserIngredients } from "./parse.js";
 import { MOIS, moisCourant, nomMois, statut, libelleSaison, analyseRecette } from "./saison.js";
@@ -458,8 +458,10 @@ function rendrePlan(c) {
   let plan = getPlan();
   if (!plan.mois) plan.mois = moisCourant();
   if (plan.mealPrep === undefined) plan.mealPrep = true;
+  if (!Number.isInteger(plan.debut)) plan.debut = 0;
+  if (!Number.isInteger(plan.fin)) plan.fin = NB_CRENEAUX - 1;
   plan.variete = normaliserVariete(plan.variete);
-  const regen = () => proposer({ mois: plan.mois, variete: plan.variete, mealPrep: plan.mealPrep });
+  const regen = () => proposer({ mois: plan.mois, variete: plan.variete, mealPrep: plan.mealPrep, debut: plan.debut, fin: plan.fin });
 
   // Auto-remplissage : si le plan est vide, on le génère tout de suite.
   if (planVide(plan)) {
@@ -485,6 +487,31 @@ function rendrePlan(c) {
     plan.mois = parseInt(selMois.value, 10);
     plan = regen();
     setPlan(plan); rendrePlan(c);
+  });
+
+  // Sélecteurs de période (du créneau X au créneau Y).
+  const creneauSelect = (valeur) => {
+    const s = el("select");
+    let idx = 0;
+    for (const jour of JOURS) for (const t of TYPES_REPAS) {
+      const lib = jour.charAt(0).toUpperCase() + jour.slice(1) + " · " + LIBELLE_REPAS[t];
+      const o = el("option", { value: String(idx), text: lib });
+      if (idx === valeur) o.selected = true;
+      s.appendChild(o); idx++;
+    }
+    return s;
+  };
+  const selDebut = creneauSelect(plan.debut);
+  const selFin = creneauSelect(plan.fin);
+  selDebut.addEventListener("change", () => {
+    plan.debut = parseInt(selDebut.value, 10);
+    if (plan.fin < plan.debut) plan.fin = plan.debut;
+    plan = regen(); setPlan(plan); rendrePlan(c);
+  });
+  selFin.addEventListener("change", () => {
+    plan.fin = parseInt(selFin.value, 10);
+    if (plan.debut > plan.fin) plan.debut = plan.fin;
+    plan = regen(); setPlan(plan); rendrePlan(c);
   });
 
   // Interrupteur meal prep.
@@ -515,6 +542,12 @@ function rendrePlan(c) {
 
   const entete = el("div", { class: "carte" });
   entete.appendChild(el("label", { class: "champ" }, ["Mois (pour la saison)", selMois]));
+  entete.appendChild(el("details", {}, [
+    el("summary", { text: "Période à planifier" }),
+    el("label", { class: "champ" }, ["Du", selDebut]),
+    el("label", { class: "champ" }, ["au", selFin]),
+    el("p", { class: "muted", text: "Pratique si tu fais les courses en cours de semaine : ne génère que ces repas (le reste est laissé vide)." })
+  ]));
   entete.appendChild(el("label", { class: "case" }, [cbMP, " Mode meal prep (répéter des plats)"]));
   if (plan.mealPrep) {
     entete.appendChild(el("details", {}, [

@@ -159,6 +159,7 @@
   { "id": "biscottes", "nom": "Biscottes", "categorie": "feculent", "rayon": "boulangerie", "tags": ["interdit-apres-17h", "pain"] },
   { "id": "pita", "nom": "Pain pita", "categorie": "feculent", "rayon": "boulangerie", "tags": ["interdit-apres-17h", "pain"] },
   { "id": "wraps", "nom": "Wraps / tortillas", "categorie": "feculent", "rayon": "boulangerie", "tags": ["interdit-apres-17h", "pain"] },
+  { "id": "pate-tarte", "nom": "Pâte à tarte (brisée)", "categorie": "feculent", "rayon": "boulangerie", "tags": ["interdit-apres-17h"] },
   { "id": "pates", "nom": "Pâtes", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h"] },
   { "id": "pates-completes", "nom": "Pâtes complètes", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h", "fibre"] },
   { "id": "nouilles", "nom": "Nouilles", "categorie": "feculent", "rayon": "epicerie-salee", "tags": ["interdit-apres-17h"] },

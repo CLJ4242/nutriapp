@@ -593,9 +593,11 @@
 
   {
     "id": "pdj-quiche-epinards-ricotta",
-    "nom": "Quiche sans pâte épinards & ricotta",
+    "nom": "Quiche épinards & ricotta",
     "typeRepas": "petit-dejeuner",
+    "typesRepas": ["petit-dejeuner", "dejeuner"],
     "ingredients": [
+      { "alimentId": "pate-tarte", "qteParPersonne": 60, "unite": "g" },
       { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
       { "alimentId": "ricotta", "qteParPersonne": 80, "unite": "g" },
       { "alimentId": "epinards", "qteParPersonne": 120, "unite": "g" },
@@ -605,9 +607,11 @@
   },
   {
     "id": "pdj-quiche-saumon-brocoli",
-    "nom": "Quiche sans pâte saumon & brocoli",
+    "nom": "Quiche saumon & brocoli",
     "typeRepas": "petit-dejeuner",
+    "typesRepas": ["petit-dejeuner", "dejeuner"],
     "ingredients": [
+      { "alimentId": "pate-tarte", "qteParPersonne": 60, "unite": "g" },
       { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
       { "alimentId": "saumon", "qteParPersonne": 80, "unite": "g" },
       { "alimentId": "brocoli", "qteParPersonne": 120, "unite": "g" },
@@ -647,6 +651,32 @@
       { "alimentId": "pommes-terre", "qteParPersonne": 100, "unite": "g" },
       { "alimentId": "oignon", "qteParPersonne": 40, "unite": "g" },
       { "alimentId": "lait", "qteParPersonne": 60, "unite": "ml" }
+    ]
+  },
+
+  {
+    "id": "quiche-epinards-ricotta-sanspate",
+    "nom": "Quiche sans pâte épinards & ricotta",
+    "typeRepas": "petit-dejeuner",
+    "typesRepas": ["petit-dejeuner", "dejeuner", "diner"],
+    "ingredients": [
+      { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
+      { "alimentId": "ricotta", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "parmesan", "qteParPersonne": 20, "unite": "g" },
+      { "alimentId": "oignon", "qteParPersonne": 30, "unite": "g" }
+    ]
+  },
+  {
+    "id": "quiche-saumon-brocoli-sanspate",
+    "nom": "Quiche sans pâte saumon & brocoli",
+    "typeRepas": "petit-dejeuner",
+    "typesRepas": ["petit-dejeuner", "dejeuner", "diner"],
+    "ingredients": [
+      { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
+      { "alimentId": "saumon", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "fromage-blanc", "qteParPersonne": 60, "unite": "g" }
     ]
   }
 ]

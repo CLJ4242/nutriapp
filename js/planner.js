@@ -210,27 +210,45 @@ export function normaliserVariete(v) {
 // options = { mois, variete, mealPrep }.
 // - mealPrep (défaut true) : peu de plats distincts, répétés en blocs.
 // - mealPrep false : un plat différent chaque jour (variété maximale).
+// Nombre total de créneaux de la semaine (jours × repas) et index d'un créneau.
+export const NB_CRENEAUX = JOURS.length * TYPES_REPAS.length;
+function indexCreneau(jourIdx, typeIdx) { return jourIdx * TYPES_REPAS.length + typeIdx; }
+
 export function proposer(options = {}) {
   const mois = options.mois || moisCourant();
   const mealPrep = options.mealPrep !== false;
   const variete = mealPrep
     ? normaliserVariete(options.variete)
     : { "petit-dejeuner": 7, "dejeuner": 7, "collation": 7, "diner": 7 };
+  let debut = Number.isInteger(options.debut) ? options.debut : 0;
+  let fin = Number.isInteger(options.fin) ? options.fin : NB_CRENEAUX - 1;
+  if (fin < debut) [debut, fin] = [fin, debut];
+
   const plan = getPlan();
   plan.mois = mois;
   plan.mealPrep = mealPrep;
   if (mealPrep) plan.variete = variete;
+  plan.debut = debut;
+  plan.fin = fin;
 
-  for (const t of TYPES_REPAS) {
+  const dansPlage = (ji, ti) => { const i = indexCreneau(ji, ti); return i >= debut && i <= fin; };
+
+  TYPES_REPAS.forEach((t, ti) => {
+    // Jours actifs pour ce repas (dans la plage, hors « dehors »).
+    const jours = JOURS.filter((jour, ji) => dansPlage(ji, ti) && !(plan.semaine[jour][t] && plan.semaine[jour][t].dehors));
     const k = Math.max(1, variete[t] || 2);
     const ids = choisirPlats(t, mois, k);
-    const parJour = repartirBlocs(ids, JOURS.length);
-    JOURS.forEach((jour, i) => {
-      // On préserve les repas marqués « dehors » (restaurant / cheat).
-      if (plan.semaine[jour][t] && plan.semaine[jour][t].dehors) return;
-      plan.semaine[jour][t] = { recetteId: parJour[i], exception: false };
-    });
-  }
+    const parJour = repartirBlocs(ids, jours.length);
+    jours.forEach((jour, i) => { plan.semaine[jour][t] = { recetteId: parJour[i], exception: false }; });
+  });
+
+  // Vide les créneaux hors plage (sauf « dehors »).
+  JOURS.forEach((jour, ji) => TYPES_REPAS.forEach((t, ti) => {
+    if (!dansPlage(ji, ti) && !(plan.semaine[jour][t] && plan.semaine[jour][t].dehors)) {
+      plan.semaine[jour][t] = { recetteId: null, exception: false };
+    }
+  }));
+
   return plan;
 }
 
