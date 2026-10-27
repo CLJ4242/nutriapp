@@ -15,7 +15,7 @@ const K = {
 
 // À incrémenter dès qu'on modifie data/aliments.json ou data/recettes.json :
 // la base de référence est alors rechargée (le foyer et le plan sont conservés).
-const SEED_VERSION = 4;
+const SEED_VERSION = 5;
 
 export const JOURS = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
 export const TYPES_REPAS = ["petit-dejeuner", "dejeuner", "collation", "diner"];
@@ -53,7 +53,11 @@ function planVide() {
       semaine[jour][t] = { recetteId: null, exception: false };
     }
   }
-  return { semaine, mois: new Date().getMonth() + 1 };
+  return {
+    semaine,
+    mois: new Date().getMonth() + 1,
+    variete: { "petit-dejeuner": 2, "dejeuner": 2, "collation": 2, "diner": 5 }
+  };
 }
 
 // Charge les bases seed depuis data/ au premier lancement, et les rafraîchit

@@ -8,7 +8,7 @@ import {
   getMasquerExemples, setMasquerExemples
 } from "./store.js";
 import { listeRegimes } from "./regimes/index.js";
-import { validerPlan, proposer, proposerRepas, planVide } from "./planner.js";
+import { validerPlan, proposer, proposerRepas, planVide, normaliserVariete } from "./planner.js";
 import { genererCourses } from "./courses.js";
 import { parserIngredients } from "./parse.js";
 import { MOIS, moisCourant, nomMois, statut, libelleSaison, analyseRecette } from "./saison.js";
@@ -429,7 +429,7 @@ function rendrePlan(c) {
   c.appendChild(el("h2", { text: "Plan de la semaine" }));
   let plan = getPlan();
   if (!plan.mois) plan.mois = moisCourant();
-  if (!plan.variete) plan.variete = 2;
+  plan.variete = normaliserVariete(plan.variete);
 
   // Auto-remplissage : si le plan est vide, on le génère tout de suite.
   if (planVide(plan)) {
@@ -454,26 +454,34 @@ function rendrePlan(c) {
     setPlan(plan); rendrePlan(c);
   });
 
-  const selVar = el("select");
-  for (const [v, lib] of [[2, "Meal prep (2 plats / semaine)"], [3, "Plus varié (3 plats)"], [7, "Différent chaque jour"]]) {
-    const o = el("option", { value: String(v), text: lib });
-    if (v === plan.variete) o.selected = true;
-    selVar.appendChild(o);
+  // Un sélecteur de variété par type de repas (nb de plats distincts / semaine).
+  const champsVar = el("div", { class: "variete" });
+  for (const t of TYPES_REPAS) {
+    const sv = el("select");
+    for (const [v, lib] of [[2, "2 plats (meal prep)"], [3, "3 plats"], [4, "4 plats"], [5, "5 plats"], [7, "Chaque jour différent"]]) {
+      const o = el("option", { value: String(v), text: lib });
+      if (v === plan.variete[t]) o.selected = true;
+      sv.appendChild(o);
+    }
+    sv.addEventListener("change", () => {
+      plan.variete[t] = parseInt(sv.value, 10);
+      plan = proposer({ mois: plan.mois, variete: plan.variete });
+      setPlan(plan); rendrePlan(c);
+    });
+    champsVar.appendChild(el("label", { class: "champ" }, [LIBELLE_REPAS[t], sv]));
   }
-  selVar.addEventListener("change", () => {
-    plan.variete = parseInt(selVar.value, 10);
-    plan = proposer({ mois: plan.mois, variete: plan.variete });
-    setPlan(plan); rendrePlan(c);
-  });
 
   const entete = el("div", { class: "carte" });
   entete.appendChild(el("label", { class: "champ" }, ["Mois (pour la saison)", selMois]));
-  entete.appendChild(el("label", { class: "champ" }, ["Variété des repas", selVar]));
+  entete.appendChild(el("details", {}, [
+    el("summary", { text: "Variété des repas (meal prep)" }),
+    champsVar
+  ]));
   entete.appendChild(el("button", {
     class: "primaire", text: "🎲 Regénérer la semaine",
     onclick: () => { plan = proposer({ mois: plan.mois, variete: plan.variete }); setPlan(plan); rendrePlan(c); }
   }));
-  entete.appendChild(el("p", { class: "muted", text: "Le plan est rempli automatiquement (recettes de saison, conformes au régime). En mode meal prep, un même plat revient plusieurs jours — pratique pour cuisiner en avance. Change un repas dans le menu, ou re-tire-le avec 🎲." }));
+  entete.appendChild(el("p", { class: "muted", text: "Rempli automatiquement : recettes de saison, conformes au régime, dîners simples. En meal prep, un même plat revient plusieurs jours (midi surtout). Change un repas dans le menu, ou re-tire-le avec 🎲." }));
   c.appendChild(entete);
 
   const zoneMsg = el("div", { class: "messages" });

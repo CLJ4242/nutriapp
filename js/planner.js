@@ -104,10 +104,6 @@ export function validerPlan(options = {}) {
   return { parJour, nbViolations, nbAvertissements };
 }
 
-function choixAleatoire(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
 function melanger(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -133,31 +129,31 @@ export function candidats(typeRepas, mois) {
   return { enSaison, horsSaison };
 }
 
-// Tire une recette pour un créneau (re-tirage d'un seul repas) : de saison en
-// priorité, en évitant si possible les recettes exclues. Renvoie un id ou null.
-export function proposerRepas(typeRepas, mois, dejaUtilisees = new Set()) {
+// Une recette est « simple » sauf si marquée effort:"cuisine" (plats élaborés).
+const estSimple = r => r.effort !== "cuisine";
+
+// Candidats ordonnés par préférence (meilleur d'abord) : de saison avant
+// hors-saison ; et pour le dîner, simple avant élaboré (dîners sobres).
+function candidatsOrdonnes(typeRepas, mois) {
   const { enSaison, horsSaison } = candidats(typeRepas, mois);
-  for (const pool of [enSaison, horsSaison]) {
-    if (!pool.length) continue;
-    const frais = pool.filter(r => !dejaUtilisees.has(r.id));
-    const choix = choixAleatoire(frais.length ? frais : pool);
-    return choix.id;
-  }
-  return null;
+  const ordonner = pool => typeRepas === "diner"
+    ? [...melanger(pool.filter(estSimple)), ...melanger(pool.filter(r => !estSimple(r)))]
+    : melanger(pool);
+  return [...ordonner(enSaison), ...ordonner(horsSaison)];
 }
 
-// Choisit jusqu'à k recettes distinctes pour un type de repas (de saison en
-// priorité, complétées hors-saison si besoin pour atteindre la variété).
+// Tire une recette pour un créneau (re-tirage d'un seul repas). Renvoie un id ou null.
+export function proposerRepas(typeRepas, mois, dejaUtilisees = new Set()) {
+  const ordre = candidatsOrdonnes(typeRepas, mois);
+  if (!ordre.length) return null;
+  const frais = ordre.filter(r => !dejaUtilisees.has(r.id));
+  return (frais[0] || ordre[0]).id;
+}
+
+// Choisit jusqu'à k recettes distinctes pour un type de repas.
 function choisirPlats(typeRepas, mois, k) {
-  const { enSaison, horsSaison } = candidats(typeRepas, mois);
-  const choisis = melanger(enSaison).slice(0, k);
-  if (choisis.length < k) {
-    for (const r of melanger(horsSaison)) {
-      if (choisis.length >= k) break;
-      choisis.push(r);
-    }
-  }
-  return choisis.map(r => r.id);
+  const ordre = candidatsOrdonnes(typeRepas, mois);
+  return ordre.slice(0, k).map(r => r.id);
 }
 
 // Répartit k plats sur n jours en blocs contigus (meal prep).
@@ -174,18 +170,31 @@ function repartirBlocs(ids, n) {
   return out;
 }
 
+// Variété par défaut : meal prep le midi, plus varié le soir.
+const VARIETE_DEFAUT = { "petit-dejeuner": 2, "dejeuner": 2, "collation": 2, "diner": 5 };
+
+// Normalise l'option variété en objet {typeRepas: nombre}.
+export function normaliserVariete(v) {
+  if (typeof v === "number") {
+    const o = {};
+    for (const t of TYPES_REPAS) o[t] = v;
+    return o;
+  }
+  return { ...VARIETE_DEFAUT, ...(v && typeof v === "object" ? v : {}) };
+}
+
 // Construit un plan hebdomadaire complet, orienté « meal prep » :
-// peu de plats distincts par type de repas, répétés en blocs sur la semaine.
-// options = { mois, variete } ; variete = nb de plats distincts par repas (défaut 2).
+// options = { mois, variete }. variete = objet {typeRepas: nb de plats distincts}.
 export function proposer(options = {}) {
   const mois = options.mois || moisCourant();
-  const variete = Math.max(1, options.variete || 2);
+  const variete = normaliserVariete(options.variete);
   const plan = getPlan();
   plan.mois = mois;
   plan.variete = variete;
 
   for (const t of TYPES_REPAS) {
-    const ids = choisirPlats(t, mois, variete);
+    const k = Math.max(1, variete[t] || 2);
+    const ids = choisirPlats(t, mois, k);
     const parJour = repartirBlocs(ids, JOURS.length);
     JOURS.forEach((jour, i) => {
       // On préserve les repas marqués « dehors » (restaurant / cheat).

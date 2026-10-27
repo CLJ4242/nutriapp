@@ -72,13 +72,11 @@ function valideRepas(repas, profil, ctx) {
   const aTag = t => aliments.some(al => a(al, t));
 
   if (typeRepas === "petit-dejeuner") {
-    const estBol = (aCategorie("laitier")) && aTag("fibre");
-    const estTartines = aTag("pain") && aCategorie("laitier");
-    if (!estBol && !estTartines) {
-      violations.push(
-        "Le petit-déjeuner doit être soit un bol (laitier + céréale/fibre + fruits), " +
-        "soit des tartines (pain + fromage + garniture)."
-      );
+    // Petit-déjeuner varié et approuvé : bol, tartines, quiche, œufs, soupe…
+    // On demande surtout une source de protéine (non bloquant).
+    const aProteine = aCategorie("laitier") || aCategorie("proteine");
+    if (!aProteine) {
+      avertissements.push("Le petit-déjeuner gagnerait à inclure une protéine (laitier, œufs, poisson…).");
     }
   }
 

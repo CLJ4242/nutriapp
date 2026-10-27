@@ -496,6 +496,7 @@
     "id": "din-dorade-fenouil",
     "nom": "Dorade, fenouil braisé, tomates & olives au thym",
     "typeRepas": "diner",
+    "effort": "cuisine",
     "ingredients": [
       { "alimentId": "dorade", "qteParPersonne": 150, "unite": "g" },
       { "alimentId": "fenouil", "qteParPersonne": 150, "unite": "g" },
@@ -509,6 +510,7 @@
     "id": "din-wok-crevettes-sesame",
     "nom": "Wok de crevettes au gingembre, brocoli & sésame",
     "typeRepas": "diner",
+    "effort": "cuisine",
     "ingredients": [
       { "alimentId": "crevettes", "qteParPersonne": 130, "unite": "g" },
       { "alimentId": "brocoli", "qteParPersonne": 120, "unite": "g" },
@@ -523,6 +525,7 @@
     "id": "din-poulet-epices-legumes",
     "nom": "Poulet aux épices, courgettes & aubergines rôties",
     "typeRepas": "diner",
+    "effort": "cuisine",
     "ingredients": [
       { "alimentId": "poulet", "qteParPersonne": 130, "unite": "g" },
       { "alimentId": "courgette", "qteParPersonne": 120, "unite": "g" },
@@ -538,6 +541,7 @@
     "id": "din-curry-cabillaud-coco",
     "nom": "Curry de cabillaud au lait de coco & épinards",
     "typeRepas": "diner",
+    "effort": "cuisine",
     "ingredients": [
       { "alimentId": "cabillaud", "qteParPersonne": 150, "unite": "g" },
       { "alimentId": "lait-coco", "qteParPersonne": 60, "unite": "ml" },
@@ -552,6 +556,7 @@
     "id": "din-dinde-mexicaine",
     "nom": "Poêlée de dinde épicée, poivrons, courgette & avocat",
     "typeRepas": "diner",
+    "effort": "cuisine",
     "ingredients": [
       { "alimentId": "dinde", "qteParPersonne": 130, "unite": "g" },
       { "alimentId": "poivron", "qteParPersonne": 100, "unite": "g" },
@@ -583,6 +588,64 @@
       { "alimentId": "yaourt-grec", "qteParPersonne": 150, "unite": "g" },
       { "alimentId": "pistaches", "qteParPersonne": 20, "unite": "g" },
       { "alimentId": "cannelle", "qteParPersonne": 1, "unite": "c. à café" }
+    ]
+  },
+
+  {
+    "id": "pdj-quiche-epinards-ricotta",
+    "nom": "Quiche sans pâte épinards & ricotta",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
+      { "alimentId": "ricotta", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "parmesan", "qteParPersonne": 20, "unite": "g" },
+      { "alimentId": "oignon", "qteParPersonne": 30, "unite": "g" }
+    ]
+  },
+  {
+    "id": "pdj-quiche-saumon-brocoli",
+    "nom": "Quiche sans pâte saumon & brocoli",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "oeufs", "qteParPersonne": 3, "unite": "pièce" },
+      { "alimentId": "saumon", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 120, "unite": "g" },
+      { "alimentId": "fromage-blanc", "qteParPersonne": 60, "unite": "g" }
+    ]
+  },
+  {
+    "id": "pdj-veloute-potiron",
+    "nom": "Velouté de potiron",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "potiron", "qteParPersonne": 250, "unite": "g" },
+      { "alimentId": "oignon", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "fromage-blanc", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "huile-olive", "qteParPersonne": 5, "unite": "ml" }
+    ]
+  },
+  {
+    "id": "pdj-soupe-verte",
+    "nom": "Soupe de légumes verts",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "courgette", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "brocoli", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "epinards", "qteParPersonne": 80, "unite": "g" },
+      { "alimentId": "oignon", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "fromage-blanc", "qteParPersonne": 40, "unite": "g" }
+    ]
+  },
+  {
+    "id": "pdj-soupe-poireaux-pdt",
+    "nom": "Soupe poireaux & pommes de terre",
+    "typeRepas": "petit-dejeuner",
+    "ingredients": [
+      { "alimentId": "poireau", "qteParPersonne": 150, "unite": "g" },
+      { "alimentId": "pommes-terre", "qteParPersonne": 100, "unite": "g" },
+      { "alimentId": "oignon", "qteParPersonne": 40, "unite": "g" },
+      { "alimentId": "lait", "qteParPersonne": 60, "unite": "ml" }
     ]
   }
 ]
